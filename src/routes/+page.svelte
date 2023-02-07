@@ -35,56 +35,82 @@
 
   let chainId: string;
   let accounts: any;
+  let canAccessApp: boolean = false;
+  let contractTxId: string | null = null;
+
   let bundlr: any;
   let balance: any;
+
   let uploadStatus: string = "not_started";
-  let contractTxId: string | null = null;
+
   let warp: any;
   let wallet: any;
+
   let owner: any = null;
   let files: any = {};
-
-  let canAccessApp: boolean = false;
 
   const isEnabledTokenGating = () => {
     return TOKEN_GATING_ENABLED === "true";
   };
 
   const ownsToken = async () => {
-    const { provider, webSocketProvider } = configureChains(
-      [mainnet],
-      [publicProvider()]
-    );
+    if (accounts.length > 0) {
+      const { provider, webSocketProvider } = configureChains(
+        [mainnet],
+        [publicProvider()]
+      );
 
-    createClient({
-      autoConnect: true,
-      provider,
-      webSocketProvider,
-    });
+      createClient({
+        autoConnect: true,
+        provider,
+        webSocketProvider,
+      });
 
-    const data = await readContract({
-      address: TOKEN_GATING_CONTRACT_ADDRESS,
-      abi: erc721ABI,
-      functionName: "balanceOf",
-      args: [accounts[0]],
-    });
+      const data = await readContract({
+        address: TOKEN_GATING_CONTRACT_ADDRESS,
+        abi: erc721ABI,
+        functionName: "balanceOf",
+        args: [accounts[0]],
+      });
 
-    return data.toNumber() > 0;
+      return data.toNumber() > 0;
+    }
+
+    return false;
   };
 
-  const initWallet = async () => {
+  const getCanAccessApp = async () => {
+    return !isEnabledTokenGating() || (await ownsToken());
+  };
+
+  const getContractTxId = async () => {
+    if (accounts.length > 0) {
+      const mainContract = getMainContract();
+      const { cachedValue } = await mainContract.readState();
+      const key = Object.keys(cachedValue.state.users).find(
+        (key) => key.toLowerCase() === accounts[0].toLowerCase()
+      );
+      if (key) {
+        return cachedValue.state.users[key];
+      }
+    }
+
+    return null;
+  };
+
+  const init = async () => {
     if (window.ethereum) {
       chainId = await window.ethereum.request({ method: "eth_chainId" });
       accounts = await window.ethereum.request({ method: "eth_accounts" });
 
-      console.log(chainId, accounts);
-
-      window.ethereum.on("accountsChanged", (_accounts: any) => {
-        accounts = _accounts;
-      });
-
       window.ethereum.on("chainChanged", (_chainId: string) => {
         chainId = _chainId;
+      });
+
+      window.ethereum.on("accountsChanged", async (_accounts: any) => {
+        accounts = _accounts;
+        canAccessApp = await getCanAccessApp();
+        contractTxId = await getContractTxId();
       });
 
       const _warp = WarpFactory.forMainnet();
@@ -93,21 +119,8 @@
       warp = _warp;
       wallet = _wallet;
 
-      if (accounts.length > 0) {
-        canAccessApp = !isEnabledTokenGating() || (await ownsToken());
-
-        const mainContract = getMainContract();
-
-        if (mainContract) {
-          const { cachedValue } = await mainContract.readState();
-          const key = Object.keys(cachedValue.state.users).find(
-            (key) => key.toLowerCase() === accounts[0].toLowerCase()
-          );
-          if (key) {
-            contractTxId = cachedValue.state.users[key];
-          }
-        }
-      }
+      canAccessApp = await getCanAccessApp();
+      contractTxId = await getContractTxId();
 
       loadingWallet = false;
     }
@@ -181,12 +194,12 @@
 
     const mainContract = getMainContract();
 
-    if (mainContract) {
-      await mainContract.writeInteraction({
-        function: "createUser",
-        contractTxId: _contractTxId,
-      });
-    }
+    await mainContract.writeInteraction({
+      function: "createUser",
+      contractTxId: _contractTxId,
+    });
+
+    contractTxId = _contractTxId;
   };
 
   const initializeContract = async () => {
@@ -276,7 +289,7 @@
 
   onMount(() => {
     if (browser) {
-      initWallet();
+      init();
     }
   });
 </script>
