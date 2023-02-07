@@ -24,12 +24,11 @@
   const ARWEAVE_GATEWAY_URL = import.meta.env.VITE_ARWEAVE_GATEWAY_URL;
   const BUNDLR_NODE_URL = import.meta.env.VITE_BUNDLR_NODE_URL;
   const TOKEN_GATING_ENABLED = import.meta.env.VITE_TOKEN_GATING_ENABLED;
-  const TOKEN_GATING_CONTRACT_ADDRESS = import.meta.env
-    .VITE_TOKEN_GATING_CONTRACT_ADDRESS;
-  const TOKEN_GATING_PROJECT_NAME = import.meta.env
-    .VITE_TOKEN_GATING_PROJECT_NAME;
-  const TOKEN_GATING_PROJECT_URL = import.meta.env
-    .VITE_TOKEN_GATING_PROJECT_URL;
+
+  const TOKEN_GATING_CONTRACT_ADDRESS =
+    "0x8EFC99918af856699b53DB659533396822f52941";
+  const TOKEN_GATING_PROJECT_NAME = "JellyBots";
+  const TOKEN_GATING_PROJECT_URL = "https://jellybots.rocks";
 
   let loadingWallet: boolean = true;
   let loadingContract: boolean = false;
@@ -78,6 +77,8 @@
       chainId = await window.ethereum.request({ method: "eth_chainId" });
       accounts = await window.ethereum.request({ method: "eth_accounts" });
 
+      console.log(chainId, accounts);
+
       window.ethereum.on("accountsChanged", (_accounts: any) => {
         accounts = _accounts;
       });
@@ -86,23 +87,25 @@
         chainId = _chainId;
       });
 
-      canAccessApp = !isEnabledTokenGating() || (await ownsToken());
-
       const _warp = WarpFactory.forMainnet();
       const _wallet = { signer: evmSignature, signatureType: "ethereum" };
 
       warp = _warp;
       wallet = _wallet;
 
-      const mainContract = getMainContract();
+      if (accounts.length > 0) {
+        canAccessApp = !isEnabledTokenGating() || (await ownsToken());
 
-      if (mainContract) {
-        const { cachedValue } = await mainContract.readState();
-        const key = Object.keys(cachedValue.state.users).find(
-          (key) => key.toLowerCase() === accounts[0].toLowerCase()
-        );
-        if (key) {
-          contractTxId = cachedValue.state.users[key];
+        const mainContract = getMainContract();
+
+        if (mainContract) {
+          const { cachedValue } = await mainContract.readState();
+          const key = Object.keys(cachedValue.state.users).find(
+            (key) => key.toLowerCase() === accounts[0].toLowerCase()
+          );
+          if (key) {
+            contractTxId = cachedValue.state.users[key];
+          }
         }
       }
 
