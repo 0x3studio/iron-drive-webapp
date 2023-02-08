@@ -17,12 +17,15 @@
   import { browser } from "$app/environment";
 
   const APP_NAME = "IronMiniDrive";
-  const MAIN_CONTRACT_TX_ID = "tV4ZjpQfES60NKjfIvHt5hJfjsVviW_DwYuS2nW9RBA";
+  const MAIN_CONTRACT_SOURCE_TX_ID =
+    "O-PVoMglLhU0I0X_eICIEWT4_YYFLP062Kg3WNT0yxs";
   const INDIVIDUAL_CONTRACT_SOURCE_TX_ID =
     "n7uP8YWizv7zBYLNrOl8tGckZg-Aaj_3Ek1x-7Pyok4";
 
   const ARWEAVE_GATEWAY_URL = import.meta.env.VITE_ARWEAVE_GATEWAY_URL;
   const BUNDLR_NODE_URL = import.meta.env.VITE_BUNDLR_NODE_URL;
+  const MAIN_CONTRACT_WARP_TX_ID = import.meta.env
+    .VITE_MAIN_CONTRACT_WARP_TX_ID;
   const TOKEN_GATING_ENABLED = import.meta.env.VITE_TOKEN_GATING_ENABLED;
 
   const TOKEN_GATING_CONTRACT_ADDRESS =
@@ -42,6 +45,7 @@
   let balance: any;
 
   let uploadStatus: string = "not_started";
+  let fundingStatus: string = "not_started";
 
   let warp: any;
   let wallet: any;
@@ -146,7 +150,7 @@
     const _bundlr = new WebBundlr(BUNDLR_NODE_URL, "ethereum", provider);
     await _bundlr.ready();
 
-    const _balance = await _bundlr.getBalance(accounts[0]);
+    const _balance = await _bundlr.getLoadedBalance();
 
     bundlr = _bundlr;
     balance = _balance;
@@ -167,7 +171,7 @@
   };
 
   const getMainContract = () => {
-    const contract = warp.contract(MAIN_CONTRACT_TX_ID).connect(wallet);
+    const contract = warp.contract(MAIN_CONTRACT_WARP_TX_ID).connect(wallet);
     return contract;
   };
 
@@ -179,8 +183,29 @@
     return contract;
   };
 
+  const deployMainContract = async () => {
+    const response = await fetch(
+      `${ARWEAVE_GATEWAY_URL}/${MAIN_CONTRACT_SOURCE_TX_ID}`
+    );
+    const source = await response.text();
+
+    const { contractTxId: _contractTxId } = await warp.deploy({
+      wallet,
+      initState: JSON.stringify({
+        users: {},
+        owner: null,
+        canEvolve: true,
+      }),
+      src: source,
+    });
+
+    console.log(_contractTxId);
+  };
+
   const deployContract = async () => {
-    const response = await fetch(INDIVIDUAL_CONTRACT_SOURCE_TX_ID);
+    const response = await fetch(
+      `${ARWEAVE_GATEWAY_URL}/${INDIVIDUAL_CONTRACT_SOURCE_TX_ID}`
+    );
     const source = await response.text();
 
     const { contractTxId: _contractTxId } = await warp.deploy({
@@ -188,6 +213,7 @@
       initState: JSON.stringify({
         files: {},
         owner: null,
+        canEvolve: true,
       }),
       src: source,
     });
@@ -212,65 +238,107 @@
     }
   };
 
+  const deleteContract = async () => {
+    if (confirm("Are you sure?")) {
+      const contract = getMainContract();
+      await contract.writeInteraction({
+        function: "deleteUser",
+      });
+      contractTxId = null;
+    }
+  };
+
+  const refreshBalance = async () => {
+    balance = await bundlr.getLoadedBalance();
+  };
+
+  const fund = async () => {
+    fundingStatus = "working";
+    try {
+      await bundlr.fund(100000000000000); // 0.0001 ETH (TODO: people can choose how much they want to fund)
+      balance = await bundlr.getLoadedBalance();
+      fundingStatus = "done";
+      setTimeout(() => {
+        fundingStatus = "not_started";
+      }, 1000);
+    } catch (err) {
+      fundingStatus = "not_started";
+    }
+  };
+
   const uploadFile = async (e: Event) => {
     const target = e.target as HTMLInputElement;
     if (target.files) {
       const file = target.files[0];
 
-      // const price = await bundlr.getPrice(file.size);
-      // const balance = await bundlr.getBalance(accounts[0]);
+      const price = await bundlr.getPrice(file.size);
 
-      uploadStatus = "uploading";
+      if (file.size < 100000 || price.toNumber() < balance.toNumber()) {
+        if (
+          file.size < 100000 ||
+          confirm(
+            `It will cost ${utils.formatEther(
+              price.toString()
+            )} ETH to upload that file. Do you want to continue?`
+          )
+        ) {
+          uploadStatus = "working";
 
-      const uploader = bundlr.uploader.chunkedUploader;
-      uploader.setBatchSize(2);
-      uploader.setChunkSize(2_000_000);
+          const uploader = bundlr.uploader.chunkedUploader;
+          uploader.setBatchSize(2);
+          uploader.setChunkSize(2_000_000);
 
-      // uploader.on("chunkUpload", (e: any) => {
-      //   console.log("uploading", e);
-      // });
+          // uploader.on("chunkUpload", (e: any) => {
+          //   console.log("uploading", e);
+          // });
 
-      const fileStream = fileReaderStream(file);
+          const fileStream = fileReaderStream(file);
 
-      uploader
-        .uploadData(fileStream, {
-          tags: [
-            { name: "Content-Type", value: file.type },
-            { name: "App-Name", value: APP_NAME },
-          ],
-        })
-        .then(async (res: any) => {
-          const contract = getContract();
-          if (contract) {
-            const newFile = {
-              size: file.size,
-              type: file.type,
-              name: file.name,
-              uploadedAt: Date.now(),
-              id: res.data.id,
-            };
+          uploader
+            .uploadData(fileStream, {
+              tags: [
+                { name: "Content-Type", value: file.type },
+                { name: "App-Name", value: APP_NAME },
+              ],
+            })
+            .then(async (res: any) => {
+              const contract = getContract();
+              if (contract) {
+                const newFile = {
+                  size: file.size,
+                  type: file.type,
+                  name: file.name,
+                  uploadedAt: Date.now(),
+                  id: res.data.id,
+                };
 
-            await contract.writeInteraction({
-              function: "createFile",
-              file: newFile,
-            });
+                await contract.writeInteraction({
+                  function: "createFile",
+                  file: newFile,
+                });
 
-            files[res.data.id] = newFile;
+                files[res.data.id] = newFile;
 
-            uploadStatus = "uploaded";
-            setTimeout(() => {
+                balance = await bundlr.getLoadedBalance();
+
+                uploadStatus = "done";
+                setTimeout(() => {
+                  uploadStatus = "not_started";
+                }, 1000);
+              } else {
+                uploadStatus = "not_started";
+                alert("No contract!");
+              }
+            })
+            .catch((err: any) => {
+              console.error(err);
               uploadStatus = "not_started";
-            }, 1000);
-          } else {
-            uploadStatus = "not_started";
-            alert("No contract!");
-          }
-        })
-        .catch((err: any) => {
-          console.error(err);
-          uploadStatus = "not_started";
-          alert("An error occurred!");
-        });
+              alert("An error occurred!");
+            });
+        }
+      } else {
+        alert("Sorry, you do not have enough funds to upload that file!");
+      }
     }
   };
 
@@ -312,13 +380,25 @@
             Your balance: <strong
               >{utils.formatEther(balance.toString())} ETH</strong
             >
+            <button on:click={refreshBalance}>Refresh</button>
+          </p>
+          <p>
+            {#if fundingStatus === "not_started"}
+              <button on:click={fund}>Fund</button>
+            {:else if fundingStatus === "working"}
+              You account is being funded. It can take a few minutes to process.
+              Don't close the current window until it's done.
+            {:else}
+              You account has been funded! It can take a few minutes to reflect
+              on your balance.
+            {/if}
           </p>
         {/if}
         {#if uploadStatus === "not_started"}
           <p><input type="file" on:change={uploadFile} /></p>
-        {:else if uploadStatus === "uploading"}
+        {:else if uploadStatus === "working"}
           <p>Uploading...</p>
-        {:else if uploadStatus === "uploaded"}
+        {:else if uploadStatus === "done"}
           <p>Uploaded!</p>
         {/if}
         {#if loadingContract}
@@ -350,6 +430,10 @@
             <button on:click={initializeContract}>Initialize contract</button>
           </p>
         {/if}
+        <!-- <p><button on:click={deleteContract}>Delete contract</button></p> -->
+        <!-- <p>
+          <button on:click={deployMainContract}>Deploy main contract</button>
+        </p> -->
       {:else}
         <p><button on:click={connectBundlr}>Connect with Bundlr</button></p>
       {/if}
