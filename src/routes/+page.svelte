@@ -5,16 +5,10 @@
   import fileReaderStream from "filereader-stream";
   import { WarpFactory } from "warp-contracts";
   import { evmSignature } from "warp-contracts-plugin-signature";
-  import {
-    createClient,
-    configureChains,
-    mainnet,
-    readContract,
-    erc721ABI,
-  } from "@wagmi/core";
-  import { publicProvider } from "@wagmi/core/providers/public";
 
   import { browser } from "$app/environment";
+  import Balance from "$lib/components/Balance.svelte";
+  import { ownsToken } from "$lib/utils/token";
 
   const APP_NAME = "IronMiniDrive";
   const MAIN_CONTRACT_SOURCE_TX_ID =
@@ -45,7 +39,6 @@
   let balance: any;
 
   let uploadStatus: string = "not_started";
-  let fundingStatus: string = "not_started";
 
   let warp: any;
   let wallet: any;
@@ -57,34 +50,14 @@
     return TOKEN_GATING_ENABLED === "true";
   };
 
-  const ownsToken = async () => {
-    if (accounts.length > 0) {
-      const { provider, webSocketProvider } = configureChains(
-        [mainnet],
-        [publicProvider()]
-      );
-
-      createClient({
-        autoConnect: true,
-        provider,
-        webSocketProvider,
-      });
-
-      const data = await readContract({
-        address: TOKEN_GATING_CONTRACT_ADDRESS,
-        abi: erc721ABI,
-        functionName: "balanceOf",
-        args: [accounts[0]],
-      });
-
-      return data.toNumber() > 0;
-    }
-
-    return false;
-  };
-
   const getCanAccessApp = async () => {
-    return !isEnabledTokenGating() || (await ownsToken());
+    if (accounts.length > 0) {
+      return (
+        !isEnabledTokenGating() ||
+        (await ownsToken(accounts[0], TOKEN_GATING_CONTRACT_ADDRESS))
+      );
+    }
+    return false;
   };
 
   const getContractTxId = async () => {
@@ -248,24 +221,6 @@
     }
   };
 
-  const refreshBalance = async () => {
-    balance = await bundlr.getLoadedBalance();
-  };
-
-  const fund = async () => {
-    fundingStatus = "working";
-    try {
-      await bundlr.fund(100000000000000); // 0.0001 ETH (TODO: people can choose how much they want to fund)
-      balance = await bundlr.getLoadedBalance();
-      fundingStatus = "done";
-      setTimeout(() => {
-        fundingStatus = "not_started";
-      }, 1000);
-    } catch (err) {
-      fundingStatus = "not_started";
-    }
-  };
-
   const uploadFile = async (e: Event) => {
     const target = e.target as HTMLInputElement;
     if (target.files) {
@@ -376,23 +331,7 @@
     {#if contractTxId}
       {#if bundlr}
         {#if balance}
-          <p>
-            Your balance: <strong
-              >{utils.formatEther(balance.toString())} ETH</strong
-            >
-            <button on:click={refreshBalance}>Refresh</button>
-          </p>
-          <p>
-            {#if fundingStatus === "not_started"}
-              <button on:click={fund}>Fund</button>
-            {:else if fundingStatus === "working"}
-              You account is being funded. It can take a few minutes to process.
-              Don't close the current window until it's done.
-            {:else}
-              You account has been funded! It can take a few minutes to reflect
-              on your balance.
-            {/if}
-          </p>
+          <Balance {bundlr} {balance} />
         {/if}
         {#if uploadStatus === "not_started"}
           <p><input type="file" on:change={uploadFile} /></p>
