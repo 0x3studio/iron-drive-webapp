@@ -1,18 +1,23 @@
 <script lang="ts">
   import { WebBundlr } from "@bundlr-network/client";
-  import { providers, utils } from "ethers";
+  import { providers } from "ethers";
   import { onMount } from "svelte";
-  import fileReaderStream from "filereader-stream";
   import { WarpFactory } from "warp-contracts";
   import { evmSignature } from "warp-contracts-plugin-signature";
 
   import { browser } from "$app/environment";
+
+  import Account from "$lib/components/Account.svelte";
   import Balance from "$lib/components/Balance.svelte";
+  import Button from "$lib/components/Button.svelte";
+  import FileList from "$lib/components/FileList.svelte";
+  import Uploader from "$lib/components/Uploader.svelte";
+
+  import { getContract } from "$lib/utils/contract";
   import { ownsToken } from "$lib/utils/token";
 
-  const APP_NAME = "IronMiniDrive";
-  const MAIN_CONTRACT_SOURCE_TX_ID =
-    "O-PVoMglLhU0I0X_eICIEWT4_YYFLP062Kg3WNT0yxs";
+  // const MAIN_CONTRACT_SOURCE_TX_ID =
+  //   "O-PVoMglLhU0I0X_eICIEWT4_YYFLP062Kg3WNT0yxs";
   const INDIVIDUAL_CONTRACT_SOURCE_TX_ID =
     "n7uP8YWizv7zBYLNrOl8tGckZg-Aaj_3Ek1x-7Pyok4";
 
@@ -28,7 +33,7 @@
   const TOKEN_GATING_PROJECT_URL = "https://jellybots.rocks";
 
   let loadingWallet: boolean = true;
-  let loadingContract: boolean = false;
+  let loadingContract: boolean = true;
 
   let chainId: string;
   let accounts: any;
@@ -37,8 +42,6 @@
 
   let bundlr: any;
   let balance: any;
-
-  let uploadStatus: string = "not_started";
 
   let warp: any;
   let wallet: any;
@@ -75,6 +78,18 @@
     return null;
   };
 
+  const loadContract = async () => {
+    const contract = getContract(warp, contractTxId, wallet);
+
+    if (contract) {
+      const { cachedValue } = await contract.readState();
+      owner = cachedValue.state.owner;
+      files = cachedValue.state.files;
+    }
+
+    loadingContract = false;
+  };
+
   const init = async () => {
     if (window.ethereum) {
       chainId = await window.ethereum.request({ method: "eth_chainId" });
@@ -85,9 +100,16 @@
       });
 
       window.ethereum.on("accountsChanged", async (_accounts: any) => {
+        loadingWallet = true;
+
         accounts = _accounts;
+
         canAccessApp = await getCanAccessApp();
         contractTxId = await getContractTxId();
+
+        loadingWallet = false;
+
+        loadContract();
       });
 
       const _warp = WarpFactory.forMainnet();
@@ -100,6 +122,8 @@
       contractTxId = await getContractTxId();
 
       loadingWallet = false;
+
+      loadContract();
     }
   };
 
@@ -127,20 +151,6 @@
 
     bundlr = _bundlr;
     balance = _balance;
-
-    loadingContract = true;
-
-    const contract = getContract();
-
-    if (contract) {
-      const { cachedValue } = await contract.readState();
-      owner = cachedValue.state.owner;
-      files = cachedValue.state.files;
-    }
-
-    setTimeout(() => {
-      loadingContract = false;
-    }, 1000);
   };
 
   const getMainContract = () => {
@@ -148,32 +158,24 @@
     return contract;
   };
 
-  const getContract = () => {
-    if (!contractTxId) {
-      return null;
-    }
-    const contract = warp.contract(contractTxId).connect(wallet);
-    return contract;
-  };
+  // const deployMainContract = async () => {
+  //   const response = await fetch(
+  //     `${ARWEAVE_GATEWAY_URL}/${MAIN_CONTRACT_SOURCE_TX_ID}`
+  //   );
+  //   const source = await response.text();
 
-  const deployMainContract = async () => {
-    const response = await fetch(
-      `${ARWEAVE_GATEWAY_URL}/${MAIN_CONTRACT_SOURCE_TX_ID}`
-    );
-    const source = await response.text();
+  //   const { contractTxId: _contractTxId } = await warp.deploy({
+  //     wallet,
+  //     initState: JSON.stringify({
+  //       users: {},
+  //       owner: null,
+  //       canEvolve: true,
+  //     }),
+  //     src: source,
+  //   });
 
-    const { contractTxId: _contractTxId } = await warp.deploy({
-      wallet,
-      initState: JSON.stringify({
-        users: {},
-        owner: null,
-        canEvolve: true,
-      }),
-      src: source,
-    });
-
-    console.log(_contractTxId);
-  };
+  //   console.log(_contractTxId);
+  // };
 
   const deployContract = async () => {
     const response = await fetch(
@@ -202,7 +204,7 @@
   };
 
   const initializeContract = async () => {
-    const contract = getContract();
+    const contract = getContract(warp, contractTxId, wallet);
     if (contract) {
       await contract.writeInteraction({
         function: "initialize",
@@ -211,94 +213,18 @@
     }
   };
 
-  const deleteContract = async () => {
-    if (confirm("Are you sure?")) {
-      const contract = getMainContract();
-      await contract.writeInteraction({
-        function: "deleteUser",
-      });
-      contractTxId = null;
-    }
-  };
+  // const deleteContract = async () => {
+  //   if (confirm("Are you sure?")) {
+  //     const contract = getMainContract();
+  //     await contract.writeInteraction({
+  //       function: "deleteUser",
+  //     });
+  //     contractTxId = null;
+  //   }
+  // };
 
-  const uploadFile = async (e: Event) => {
-    const target = e.target as HTMLInputElement;
-    if (target.files) {
-      const file = target.files[0];
-
-      const price = await bundlr.getPrice(file.size);
-
-      if (file.size < 100000 || price.toNumber() < balance.toNumber()) {
-        if (
-          file.size < 100000 ||
-          confirm(
-            `It will cost ${utils.formatEther(
-              price.toString()
-            )} ETH to upload that file. Do you want to continue?`
-          )
-        ) {
-          uploadStatus = "working";
-
-          const uploader = bundlr.uploader.chunkedUploader;
-          uploader.setBatchSize(2);
-          uploader.setChunkSize(2_000_000);
-
-          // uploader.on("chunkUpload", (e: any) => {
-          //   console.log("uploading", e);
-          // });
-
-          const fileStream = fileReaderStream(file);
-
-          uploader
-            .uploadData(fileStream, {
-              tags: [
-                { name: "Content-Type", value: file.type },
-                { name: "App-Name", value: APP_NAME },
-              ],
-            })
-            .then(async (res: any) => {
-              const contract = getContract();
-              if (contract) {
-                const newFile = {
-                  size: file.size,
-                  type: file.type,
-                  name: file.name,
-                  uploadedAt: Date.now(),
-                  id: res.data.id,
-                };
-
-                await contract.writeInteraction({
-                  function: "createFile",
-                  file: newFile,
-                });
-
-                files[res.data.id] = newFile;
-
-                balance = await bundlr.getLoadedBalance();
-
-                uploadStatus = "done";
-                setTimeout(() => {
-                  uploadStatus = "not_started";
-                }, 1000);
-              } else {
-                uploadStatus = "not_started";
-                alert("No contract!");
-              }
-            })
-            .catch((err: any) => {
-              console.error(err);
-              uploadStatus = "not_started";
-              alert("An error occurred!");
-            });
-        }
-      } else {
-        alert("Sorry, you do not have enough funds to upload that file!");
-      }
-    }
-  };
-
-  const deleteFile = async (id: any) => {
-    const contract = getContract();
+  const handleDeleteFile = async (id: string) => {
+    const contract = getContract(warp, contractTxId, wallet);
     if (contract) {
       await contract.writeInteraction({
         function: "deleteFile",
@@ -308,6 +234,10 @@
       });
       files = delete files[id] && files;
     }
+  };
+
+  const handleFinishUpload = (id: string, newFile: string) => {
+    files[id] = newFile;
   };
 
   onMount(() => {
@@ -324,71 +254,64 @@
 {:else if chainId !== "0x1"}
   <p>Please connect to Ethereum Mainnet.</p>
 {:else if accounts.length > 0}
-  <p>
-    Connected with account: <strong>{accounts[0]}</strong>
-  </p>
+  <Account account={accounts[0]} />
   {#if canAccessApp}
     {#if contractTxId}
-      {#if bundlr}
-        {#if balance}
+      <div class="bundlr">
+        {#if bundlr}
           <Balance {bundlr} {balance} />
-        {/if}
-        {#if uploadStatus === "not_started"}
-          <p><input type="file" on:change={uploadFile} /></p>
-        {:else if uploadStatus === "working"}
-          <p>Uploading...</p>
-        {:else if uploadStatus === "done"}
-          <p>Uploaded!</p>
-        {/if}
-        {#if loadingContract}
-          <p>Loading...</p>
-        {:else if owner}
-          {#if Object.keys(files).length > 0}
-            <ul>
-              {#each Object.values(files) as file, i}
-                <li>
-                  <a
-                    href="{ARWEAVE_GATEWAY_URL}/{file.id}"
-                    target="_blank"
-                    rel="noreferrer">{file.name}</a
-                  >
-                  ({file.type} - {file.size})
-                  <button
-                    on:click={() => {
-                      deleteFile(file.id);
-                    }}>Delete</button
-                  >
-                </li>
-              {/each}
-            </ul>
-          {:else}
-            <p>No files uploaded yet.</p>
-          {/if}
         {:else}
-          <p>
-            <button on:click={initializeContract}>Initialize contract</button>
-          </p>
+          <Button onClick={connectBundlr}>Connect with Bundlr</Button>
         {/if}
-        <!-- <p><button on:click={deleteContract}>Delete contract</button></p> -->
-        <!-- <p>
-          <button on:click={deployMainContract}>Deploy main contract</button>
-        </p> -->
+      </div>
+      <div class="uploader">
+        <Uploader
+          {bundlr}
+          {balance}
+          contract={getContract(warp, contractTxId, wallet)}
+          onFinishUpload={handleFinishUpload}
+        />
+      </div>
+      {#if loadingContract}
+        <p>Loading...</p>
+      {:else if owner}
+        <FileList {files} onDeleteFile={handleDeleteFile} />
       {:else}
-        <p><button on:click={connectBundlr}>Connect with Bundlr</button></p>
+        <Button onClick={initializeContract}>Initialize contract</Button>
       {/if}
+      <!-- <p><Button onClick={deleteContract}>Delete contract</Button></p> -->
+      <!-- <p>
+          <Button onClick={deployMainContract}>Deploy main contract</Button>
+        </p> -->
     {:else}
-      <button on:click={deployContract}>Deploy contract</button>
+      <Button onClick={deployContract}>Deploy contract</Button>
     {/if}
   {:else}
     <p>
-      You must own a {TOKEN_GATING_PROJECT_NAME} token to access this application.
+      You must own at least one {TOKEN_GATING_PROJECT_NAME} NFT to access this application.
     </p>
     <p>
       <a href={TOKEN_GATING_PROJECT_URL} target="_blank" rel="noreferrer"
         >Get one here</a
-      >
+      > and refresh this page when it is done.
     </p>
   {/if}
 {:else}
-  <button on:click={connectWallet}>Sign in with MetaMask</button>
+  <Button onClick={connectWallet}>Sign in with MetaMask</Button>
 {/if}
+
+<style>
+  h1 {
+    border-bottom: 5px solid #000;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+  .bundlr {
+    border-bottom: 5px solid #000;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+  .uploader {
+    margin-bottom: 20px;
+  }
+</style>

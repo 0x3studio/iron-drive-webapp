@@ -22,6 +22,7 @@
 	"type": "module",
 	"dependencies": {
 		"@bundlr-network/client": "^0.8.9",
+		"@iconify/svelte": "^3.1.0",
 		"@urql/svelte": "^3.0.3",
 		"@wagmi/core": "^0.9.4",
 		"ethers": "^5.7.2",
