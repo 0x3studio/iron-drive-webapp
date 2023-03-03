@@ -65,12 +65,6 @@
   li:hover {
     background-color: #f7f7f7;
   }
-  li a {
-    color: black;
-  }
-  li a:hover {
-    color: #666;
-  }
   li span {
     color: #999;
   }
