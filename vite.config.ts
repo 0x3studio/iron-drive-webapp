@@ -3,7 +3,7 @@ import type { UserConfig } from "vite";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 const config: UserConfig = {
-  plugins: [sveltekit(), nodePolyfills()],
+  plugins: [sveltekit(), nodePolyfills({ protocolImports: true })],
   build: {
     target: "es2020",
   },
