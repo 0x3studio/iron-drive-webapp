@@ -11,6 +11,7 @@
   import Balance from "$lib/components/Balance.svelte";
   import Button from "$lib/components/Button.svelte";
   import FileList from "$lib/components/FileList.svelte";
+  import TokenGate from "$lib/components/TokenGate.svelte";
   import Uploader from "$lib/components/Uploader.svelte";
 
   import { getContract } from "$lib/utils/contract";
@@ -287,14 +288,10 @@
       <Button onClick={deployContract}>Deploy contract</Button>
     {/if}
   {:else}
-    <p>
-      You must own at least one {TOKEN_GATING_PROJECT_NAME} NFT to access this application.
-    </p>
-    <p>
-      <a href={TOKEN_GATING_PROJECT_URL} target="_blank" rel="noreferrer"
-        >Get one here</a
-      > and refresh this page when it is done.
-    </p>
+    <TokenGate
+      name={TOKEN_GATING_PROJECT_NAME}
+      url={TOKEN_GATING_PROJECT_URL}
+    />
   {/if}
 {:else}
   <Button onClick={connectWallet}>Sign in with MetaMask</Button>
