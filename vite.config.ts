@@ -1,15 +1,22 @@
 import { sveltekit } from "@sveltejs/kit/vite";
-import { defineConfig } from "vite";
-import nodePolyfills from "vite-plugin-node-stdlib-browser";
+import type { UserConfig } from "vite";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 
-const config = defineConfig({
-  plugins: [sveltekit(), nodePolyfills()],
+const config: UserConfig = {
+  plugins: [
+    sveltekit(),
+    nodePolyfills({
+      protocolImports: true,
+    }),
+  ],
   build: {
     target: "es2020",
   },
   optimizeDeps: {
-    esbuildOptions: { target: "es2020" },
+    esbuildOptions: {
+      target: "es2020",
+    },
   },
-});
+};
 
 export default config;
