@@ -34,7 +34,7 @@
   let loadingContract: boolean = true;
 
   let chainId: string;
-  let accounts: any;
+  let accounts: any = [];
   let canAccessApp: boolean = false;
   let contractTxId: string | null = null;
 
