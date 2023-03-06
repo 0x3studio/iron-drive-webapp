@@ -14,4 +14,7 @@
     padding-bottom: 20px;
     margin-bottom: 20px;
   }
+  p {
+    line-height: 1.4em;
+  }
 </style>

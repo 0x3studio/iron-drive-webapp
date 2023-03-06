@@ -33,14 +33,16 @@
             rel="noreferrer">{file.name}</a
           >
         </span>
-        <span>{file.type}</span>
-        <span>{formatBytes(file.size)}</span>
-        <IconButton
-          icon="material-symbols:delete-outline"
-          onClick={() => {
-            onDeleteFile(file.id);
-          }}
-        />
+        <span class="type">{file.type}</span>
+        <span class="size">{formatBytes(file.size)}</span>
+        <span class="action">
+          <IconButton
+            icon="material-symbols:delete-outline"
+            onClick={() => {
+              onDeleteFile(file.id);
+            }}
+          />
+        </span>
       </li>
     {/each}
   </ul>
@@ -55,33 +57,47 @@
   }
   li {
     display: flex;
-    column-gap: 3rem;
     justify-content: space-between;
     line-height: 2.5rem;
     align-items: center;
     padding: 0 1.25rem;
     transition: all 0.2s ease-in-out;
-    white-space: nowrap;
   }
   li:hover {
     background-color: #f7f7f7;
   }
   li span {
     color: #999;
+    padding-right: 2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .name {
-    flex: 1;
     display: flex;
     color: #000;
     font-size: 1.25rem;
     align-items: center;
     column-gap: 0.25rem;
-    width: 50%;
+    width: 60%;
   }
   .name a {
     font-size: 1rem;
     max-width: calc(100% - 1.5rem);
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+  .type {
+    width: 20%;
+  }
+  .size {
+    width: 15%;
+  }
+  .action {
+    width: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0;
   }
 </style>
