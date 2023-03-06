@@ -80,7 +80,7 @@
   }
   .name a {
     font-size: 1rem;
-    width: calc(100% - 1.5rem);
+    max-width: calc(100% - 1.5rem);
     overflow: hidden;
     text-overflow: ellipsis;
   }
