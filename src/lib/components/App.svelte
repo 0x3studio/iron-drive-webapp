@@ -64,10 +64,13 @@
   const getContractTxId = async () => {
     if (accounts.length > 0) {
       const mainContract = getMainContract();
+      console.log("MAIN CONTRACT", mainContract);
       const { cachedValue } = await mainContract.readState();
+      console.log("CACHED VALUE", cachedValue);
       const key = Object.keys(cachedValue.state.users).find(
         (key) => key.toLowerCase() === accounts[0].toLowerCase()
       );
+      console.log("KEY", key);
       if (key) {
         return cachedValue.state.users[key];
       }
