@@ -101,9 +101,12 @@
         loadingWallet = true;
 
         accounts = _accounts;
+        console.log("ACCOUNTS", accounts);
 
         canAccessApp = await getCanAccessApp();
+        console.log("CAN ACCESS APP", canAccessApp);
         contractTxId = await getContractTxId();
+        console.log("CONTRACT TX ID", contractTxId);
 
         loadingWallet = false;
 
@@ -117,7 +120,9 @@
       wallet = _wallet;
 
       canAccessApp = await getCanAccessApp();
+      console.log("CAN ACCESS APP", canAccessApp);
       contractTxId = await getContractTxId();
+      console.log("CONTRACT TX ID", contractTxId);
 
       loadingWallet = false;
 
