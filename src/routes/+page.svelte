@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { WebBundlr } from "@bundlr-network/client";
   import { providers } from "ethers";
   import { onMount } from "svelte";
   import { WarpFactory } from "warp-contracts";
@@ -49,6 +48,8 @@
 
   let owner: any = null;
   let files: any = {};
+
+  let WebBundlr: any = null;
 
   const isEnabledTokenGating = () => {
     return TOKEN_GATING_ENABLED === "true";
@@ -241,8 +242,9 @@
     files[id] = newFile;
   };
 
-  onMount(() => {
+  onMount(async () => {
     if (browser) {
+      WebBundlr = (await import("@bundlr-network/client")).default;
       init();
     }
   });
