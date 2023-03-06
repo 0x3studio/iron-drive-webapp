@@ -61,6 +61,7 @@
     align-items: center;
     padding: 0 1.25rem;
     transition: all 0.2s ease-in-out;
+    white-space: nowrap;
   }
   li:hover {
     background-color: #f7f7f7;
@@ -75,8 +76,12 @@
     font-size: 1.25rem;
     align-items: center;
     column-gap: 0.25rem;
+    width: 50%;
   }
   .name a {
     font-size: 1rem;
+    width: calc(100% - 1.5rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 </style>
