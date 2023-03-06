@@ -4,6 +4,9 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 const config: UserConfig = {
   plugins: [sveltekit(), nodePolyfills()],
+  resolve: {
+    alias: { "near-api-js": "near-api-js/dist/near-api-js.js" },
+  },
 };
 
 export default config;
