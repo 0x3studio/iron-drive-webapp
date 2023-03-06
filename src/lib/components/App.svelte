@@ -64,13 +64,10 @@
   const getContractTxId = async () => {
     if (accounts.length > 0) {
       const mainContract = getMainContract();
-      console.log("MAIN CONTRACT", mainContract);
       const { cachedValue } = await mainContract.readState();
-      console.log("CACHED VALUE", cachedValue);
       const key = Object.keys(cachedValue.state.users).find(
         (key) => key.toLowerCase() === accounts[0].toLowerCase()
       );
-      console.log("KEY", key);
       if (key) {
         return cachedValue.state.users[key];
       }
@@ -95,7 +92,6 @@
     if (window.ethereum) {
       chainId = await window.ethereum.request({ method: "eth_chainId" });
       accounts = await window.ethereum.request({ method: "eth_accounts" });
-      console.log("ACCOUNTS", accounts);
 
       window.ethereum.on("chainChanged", (_chainId: string) => {
         chainId = _chainId;
@@ -105,12 +101,9 @@
         loadingWallet = true;
 
         accounts = _accounts;
-        console.log("ACCOUNTS", accounts);
 
         canAccessApp = await getCanAccessApp();
-        console.log("CAN ACCESS APP", canAccessApp);
         contractTxId = await getContractTxId();
-        console.log("CONTRACT TX ID", contractTxId);
 
         loadingWallet = false;
 
@@ -124,9 +117,7 @@
       wallet = _wallet;
 
       canAccessApp = await getCanAccessApp();
-      console.log("CAN ACCESS APP", canAccessApp);
       contractTxId = await getContractTxId();
-      console.log("CONTRACT TX ID", contractTxId);
 
       loadingWallet = false;
 
