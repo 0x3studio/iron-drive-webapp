@@ -92,6 +92,7 @@
     if (window.ethereum) {
       chainId = await window.ethereum.request({ method: "eth_chainId" });
       accounts = await window.ethereum.request({ method: "eth_accounts" });
+      console.log("ACCOUNTS", accounts);
 
       window.ethereum.on("chainChanged", (_chainId: string) => {
         chainId = _chainId;
