@@ -28,7 +28,7 @@
       fundingStatus = "done";
       setTimeout(() => {
         fundingStatus = "not_started";
-      }, 1000);
+      }, 5000);
     } catch (err) {
       fundingStatus = "not_started";
     }
