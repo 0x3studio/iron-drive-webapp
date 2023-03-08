@@ -8,6 +8,7 @@
   import Balance from "$lib/components/Balance.svelte";
   import Button from "$lib/components/Button.svelte";
   import FileList from "$lib/components/FileList.svelte";
+  import Logo from "$lib/components/Logo.svelte";
   import TokenGate from "$lib/components/TokenGate.svelte";
   import Uploader from "$lib/components/Uploader.svelte";
 
@@ -241,7 +242,7 @@
   init();
 </script>
 
-<h1>Iron MiniDrive</h1>
+<Logo />
 
 {#if loadingWallet}
   <p>Loading...</p>
@@ -291,11 +292,6 @@
 {/if}
 
 <style>
-  h1 {
-    border-bottom: 5px solid #000;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
-  }
   .bundlr {
     border-bottom: 5px solid #000;
     padding-bottom: 20px;
