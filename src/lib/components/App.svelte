@@ -4,13 +4,13 @@
   import { WarpFactory } from "warp-contracts";
   import { evmSignature } from "warp-contracts-plugin-signature";
 
-  import Account from "$lib/components/Account.svelte";
-  import Balance from "$lib/components/Balance.svelte";
   import Button from "$lib/components/Button.svelte";
   import FileList from "$lib/components/FileList.svelte";
-  import Logo from "$lib/components/Logo.svelte";
   import TokenGate from "$lib/components/TokenGate.svelte";
   import Uploader from "$lib/components/Uploader.svelte";
+
+  import LoginLayout from "$lib/layouts/Login.svelte";
+  import MainLayout from "$lib/layouts/Main.svelte";
 
   import { getContract } from "$lib/utils/contract";
   import { ownsToken } from "$lib/utils/token";
@@ -242,62 +242,68 @@
   init();
 </script>
 
-<Logo />
-
 {#if loadingWallet}
-  <p>Loading...</p>
+  <LoginLayout>
+    <p>Loading...</p>
+  </LoginLayout>
 {:else if chainId !== "0x1"}
-  <p>Please connect to Ethereum Mainnet.</p>
-{:else if accounts.length > 0}
-  <Account account={accounts[0]} />
-  {#if canAccessApp}
-    {#if contractTxId}
-      <div class="bundlr">
-        {#if bundlr}
-          <Balance {bundlr} {balance} />
-        {:else}
-          <Button onClick={connectBundlr}>Connect with Bundlr</Button>
-        {/if}
+  <LoginLayout>
+    <p>Please connect to Ethereum Mainnet.</p>
+  </LoginLayout>
+{:else if accounts.length === 0}
+  <LoginLayout>
+    <Button onClick={connectWallet}>Sign in with MetaMask</Button>
+  </LoginLayout>
+{:else if canAccessApp}
+  {#if contractTxId}
+    <MainLayout account={accounts[0]} {bundlr} {balance} {connectBundlr}>
+      <div class="main">
+        <div class="uploader">
+          <Uploader
+            {bundlr}
+            {balance}
+            contract={getContract(warp, contractTxId, wallet)}
+            onFinishUpload={handleFinishUpload}
+          />
+        </div>
+        <div class="files">
+          {#if loadingContract}
+            <p>Loading...</p>
+          {:else if owner}
+            <FileList {files} onDeleteFile={handleDeleteFile} />
+          {:else}
+            <Button onClick={initializeContract}>Initialize contract</Button>
+          {/if}
+        </div>
       </div>
-      <div class="uploader">
-        <Uploader
-          {bundlr}
-          {balance}
-          contract={getContract(warp, contractTxId, wallet)}
-          onFinishUpload={handleFinishUpload}
-        />
-      </div>
-      {#if loadingContract}
-        <p>Loading...</p>
-      {:else if owner}
-        <FileList {files} onDeleteFile={handleDeleteFile} />
-      {:else}
-        <Button onClick={initializeContract}>Initialize contract</Button>
-      {/if}
-      <!-- <p><Button onClick={deleteContract}>Delete contract</Button></p> -->
-      <!-- <p>
-          <Button onClick={deployMainContract}>Deploy main contract</Button>
-        </p> -->
-    {:else}
-      <Button onClick={deployContract}>Deploy contract</Button>
-    {/if}
+    </MainLayout>
   {:else}
+    <LoginLayout>
+      <Button onClick={deployContract}>Deploy contract</Button>
+    </LoginLayout>
+  {/if}
+{:else}
+  <LoginLayout>
     <TokenGate
       name={TOKEN_GATING_PROJECT_NAME}
       url={TOKEN_GATING_PROJECT_URL}
     />
-  {/if}
-{:else}
-  <Button onClick={connectWallet}>Sign in with MetaMask</Button>
+  </LoginLayout>
 {/if}
 
 <style>
-  .bundlr {
-    border-bottom: 5px solid #000;
-    padding-bottom: 20px;
-    margin-bottom: 20px;
+  .main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
   .uploader {
-    margin-bottom: 20px;
+    border-bottom: 2px solid #f9f8f8;
+    padding: 20px;
+    height: 88px;
+  }
+  .files {
+    padding: 10px 20px;
+    flex: 1;
   }
 </style>

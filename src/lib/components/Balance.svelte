@@ -36,40 +36,64 @@
 </script>
 
 <div class="balance">
-  <p>
-    Your balance: <strong>{utils.formatEther(balance.toString())} ETH</strong>
-  </p>
-  {#if refreshing}
-    <p>Refreshing...</p>
-  {:else}
-    <IconButton onClick={refreshBalance} icon="material-symbols:refresh-rounded"
-      >Refresh</IconButton
+  <h2>Your balance</h2>
+  <div class="value">
+    <strong>{utils.formatEther(balance.toString()).slice(0, 10)} ETH</strong>
+    {#if refreshing}
+      <p>...</p>
+    {:else}
+      <IconButton
+        onClick={refreshBalance}
+        icon="material-symbols:refresh-rounded">Refresh</IconButton
+      >
+    {/if}
+  </div>
+  <div class="action">
+    <Button onClick={fund} disabled={fundingStatus !== "not_started"}
+      >Fund</Button
     >
-  {/if}
+  </div>
 </div>
 
-<div class="fund">
-  {#if fundingStatus === "not_started"}
-    <Button onClick={fund}>Fund</Button>
-  {:else if fundingStatus === "working"}
-    <p>
-      You account is being funded. It can take a few minutes to process. Don't
-      close the current window until it's done.
-    </p>
-  {:else}
-    <p>
-      You account has been funded! It can take a few minutes to reflect on your
-      balance.
-    </p>
-  {/if}
-</div>
+{#if fundingStatus !== "not_started"}
+  <div class="fund">
+    {#if fundingStatus === "working"}
+      <p>
+        You account is being funded. It can take a few minutes to process. Don't
+        close the current window until it's done.
+      </p>
+    {/if}
+    {#if fundingStatus === "done"}
+      <p>
+        You account has been funded! It can take a few minutes to reflect on
+        your balance.
+      </p>
+    {/if}
+  </div>
+{/if}
 
 <style>
   .balance {
     display: flex;
-    align-items: center;
-    column-gap: 0.5rem;
-    margin-bottom: 20px;
+    flex-direction: column;
     line-height: 1.25rem;
+    border: 2px solid #f9f8f8;
+    margin-bottom: 1.25rem;
+    padding: 20px;
+  }
+  .balance h2 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+  .balance .value {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+    column-gap: 0.25rem;
+    line-height: 20px;
+  }
+  .fund p {
+    line-height: 1.4em;
   }
 </style>

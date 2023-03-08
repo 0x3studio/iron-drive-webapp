@@ -111,4 +111,7 @@
   input[type="file"] {
     display: none;
   }
+  p {
+    line-height: 46px;
+  }
 </style>

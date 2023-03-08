@@ -1,8 +1,9 @@
 <script lang="ts">
   export let onClick: any;
+  export let disabled: boolean = false;
 </script>
 
-<button on:click={onClick}>
+<button on:click={onClick} {disabled}>
   <slot />
 </button>
 
@@ -37,5 +38,13 @@
   button:hover:after {
     top: 0px;
     left: 0px;
+  }
+  button:disabled {
+    pointer-events: none;
+    border: 1px solid #aaa;
+  }
+
+  button:disabled:after {
+    background-color: #f9f8f8;
   }
 </style>

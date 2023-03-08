@@ -3,22 +3,12 @@
 
   import IconButton from "$lib/components/IconButton.svelte";
 
+  import { formatFilename, formatBytes } from "$lib/utils/format";
+
   export let files: any;
   export let onDeleteFile: Function;
 
   const ARWEAVE_GATEWAY_URL = import.meta.env.VITE_ARWEAVE_GATEWAY_URL;
-
-  const formatBytes = (bytes: number, decimals = 2) => {
-    if (!+bytes) return "0 Bytes";
-
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-  };
 </script>
 
 {#if Object.keys(files).length > 0}
@@ -30,7 +20,8 @@
           <a
             href="{ARWEAVE_GATEWAY_URL}/{file.id}"
             target="_blank"
-            rel="noreferrer">{file.name}</a
+            rel="noreferrer"
+            title={file.name}>{formatFilename(file.name)}</a
           >
         </span>
         <span class="type">{file.type}</span>
