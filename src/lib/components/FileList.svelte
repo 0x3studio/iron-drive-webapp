@@ -55,7 +55,7 @@
     transition: all 0.2s ease-in-out;
   }
   li:hover {
-    background-color: #f7f7f7;
+    background-color: #f9f8f8;
   }
   li span {
     color: #999;
