@@ -12,6 +12,7 @@
   import LoginLayout from "$lib/layouts/Login.svelte";
   import MainLayout from "$lib/layouts/Main.svelte";
 
+  import { chainIdToName } from "$lib/utils/chain";
   import { getContract } from "$lib/utils/contract";
   import { ownsToken } from "$lib/utils/token";
 
@@ -112,7 +113,10 @@
       });
 
       const _warp = WarpFactory.forMainnet();
-      const _wallet = { signer: evmSignature, signatureType: "ethereum" };
+      const _wallet = {
+        signer: evmSignature,
+        signatureType: chainIdToName(chainId),
+      };
 
       warp = _warp;
       wallet = _wallet;
@@ -143,7 +147,11 @@
     const provider = new providers.Web3Provider(window.ethereum);
     await provider._ready();
 
-    const _bundlr = new WebBundlr(BUNDLR_NODE_URL, "ethereum", provider);
+    const _bundlr = new WebBundlr(
+      BUNDLR_NODE_URL,
+      chainIdToName(chainId),
+      provider
+    );
     await _bundlr.ready();
 
     const _balance = await _bundlr.getLoadedBalance();
@@ -256,27 +264,33 @@
   </LoginLayout>
 {:else if canAccessApp}
   {#if contractTxId}
-    <MainLayout account={accounts[0]} {bundlr} {balance} {connectBundlr}>
-      <div class="main">
-        <div class="uploader">
-          <Uploader
-            {bundlr}
-            {balance}
-            contract={getContract(warp, contractTxId, wallet)}
-            onFinishUpload={handleFinishUpload}
-          />
+    {#if bundlr}
+      <MainLayout account={accounts[0]} {bundlr} {balance}>
+        <div class="main">
+          <div class="uploader">
+            <Uploader
+              {bundlr}
+              {balance}
+              contract={getContract(warp, contractTxId, wallet)}
+              onFinishUpload={handleFinishUpload}
+            />
+          </div>
+          <div class="files">
+            {#if loadingContract}
+              <p>Loading...</p>
+            {:else if owner}
+              <FileList {files} onDeleteFile={handleDeleteFile} />
+            {:else}
+              <Button onClick={initializeContract}>Initialize contract</Button>
+            {/if}
+          </div>
         </div>
-        <div class="files">
-          {#if loadingContract}
-            <p>Loading...</p>
-          {:else if owner}
-            <FileList {files} onDeleteFile={handleDeleteFile} />
-          {:else}
-            <Button onClick={initializeContract}>Initialize contract</Button>
-          {/if}
-        </div>
-      </div>
-    </MainLayout>
+      </MainLayout>
+    {:else}
+      <LoginLayout>
+        <Button onClick={connectBundlr}>Connect to Iron</Button>
+      </LoginLayout>
+    {/if}
   {:else}
     <LoginLayout>
       <Button onClick={deployContract}>Deploy contract</Button>
