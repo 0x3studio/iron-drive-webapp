@@ -254,11 +254,17 @@
   </SimpleLayout>
 {:else if chainId !== "0x1"}
   <SimpleLayout>
-    <p>Please connect to Ethereum Mainnet.</p>
+    <div class="simple">
+      <div class="info">Please connect to Ethereum Mainnet.</div>
+    </div>
   </SimpleLayout>
 {:else if accounts.length === 0}
   <SimpleLayout>
-    <Button onClick={connectWallet}>Sign in with MetaMask</Button>
+    <div class="action">
+      <Button onClick={connectWallet} icon="logos:metamask-icon"
+        >Sign in with MetaMask</Button
+      >
+    </div>
   </SimpleLayout>
 {:else if canAccessApp}
   {#if bundlr}
@@ -282,17 +288,41 @@
         </MainLayout>
       {:else}
         <SimpleLayout>
-          <Button onClick={initializeContract}>Initialize contract</Button>
+          <div class="simple">
+            <div class="info">
+              Now that the contract is deployed, you need to initialize it to
+              make it your own. When it’s done, only you will be able to
+              interact with your contract, forever.
+            </div>
+            <div class="action">
+              <Button onClick={initializeContract}>Initialize contract</Button>
+            </div>
+          </div>
         </SimpleLayout>
       {/if}
     {:else}
       <SimpleLayout>
-        <Button onClick={deployContract}>Deploy contract</Button>
+        <div class="simple">
+          <div class="info">
+            Iron works in a decentralized way, in order for every user to be the
+            sole owner of the content uploaded to the service. To make that
+            possible, every user needs to deploy their own contract.
+          </div>
+          <div class="action">
+            <Button onClick={deployContract}>Deploy contract</Button>
+          </div>
+        </div>
       </SimpleLayout>
     {/if}
   {:else}
     <SimpleLayout>
-      <Button onClick={connectBundlr}>Connect to Iron</Button>
+      <div class="simple">
+        <div class="action">
+          <Button onClick={connectBundlr} icon="material-symbols:login"
+            >Connect to Iron</Button
+          >
+        </div>
+      </div>
     </SimpleLayout>
   {/if}
 {:else}
@@ -313,8 +343,19 @@
   .files {
     flex: 1;
   }
-  p {
+  .simple {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 1rem;
+  }
+  .info {
     font-size: 14px;
+    line-height: 1.4em;
+    max-width: 400px;
+  }
+  .action {
+    width: 250px;
   }
 
   .title {

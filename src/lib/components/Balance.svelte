@@ -70,8 +70,10 @@
     {/if}
   </div>
   <div class="add">
-    <Button onClick={fund} disabled={fundingStatus !== "not_started"}
-      >Add funds</Button
+    <Button
+      onClick={fund}
+      disabled={fundingStatus !== "not_started"}
+      icon="material-symbols:add-box-outline">Add funds</Button
     >
   </div>
 </div>
