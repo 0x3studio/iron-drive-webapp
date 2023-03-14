@@ -28,6 +28,8 @@
 		"@wagmi/core": "^0.9.4",
 		"ethers": "^5.7.2",
 		"filereader-stream": "^2.0.0",
+		"svelte-loading-spinners": "^0.3.4",
+		"svooltip": "^0.5.1",
 		"warp-contracts": "^1.2.51",
 		"warp-contracts-plugin-signature": "^1.0.9"
 	}

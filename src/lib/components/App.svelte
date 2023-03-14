@@ -3,13 +3,14 @@
   import { WebBundlr } from "@bundlr-network/client";
   import { WarpFactory } from "warp-contracts";
   import { evmSignature } from "warp-contracts-plugin-signature";
+  import { Jumper } from "svelte-loading-spinners";
 
   import Button from "$lib/components/Button.svelte";
   import FileList from "$lib/components/FileList.svelte";
   import TokenGate from "$lib/components/TokenGate.svelte";
   import Uploader from "$lib/components/Uploader.svelte";
 
-  import LoginLayout from "$lib/layouts/Login.svelte";
+  import SimpleLayout from "$lib/layouts/Simple.svelte";
   import MainLayout from "$lib/layouts/Main.svelte";
 
   import { chainIdToName } from "$lib/utils/chain";
@@ -33,7 +34,6 @@
   const TOKEN_GATING_PROJECT_URL = "https://jellybots.rocks";
 
   let loadingWallet: boolean = true;
-  let loadingContract: boolean = true;
 
   let chainId: string;
   let accounts: any = [];
@@ -86,8 +86,6 @@
       owner = cachedValue.state.owner;
       files = cachedValue.state.files;
     }
-
-    loadingContract = false;
   };
 
   const init = async () => {
@@ -251,58 +249,59 @@
 </script>
 
 {#if loadingWallet}
-  <LoginLayout>
-    <p>Loading...</p>
-  </LoginLayout>
+  <SimpleLayout>
+    <Jumper size="44" color="#04cae5" unit="px" duration="1s" />
+  </SimpleLayout>
 {:else if chainId !== "0x1"}
-  <LoginLayout>
+  <SimpleLayout>
     <p>Please connect to Ethereum Mainnet.</p>
-  </LoginLayout>
+  </SimpleLayout>
 {:else if accounts.length === 0}
-  <LoginLayout>
+  <SimpleLayout>
     <Button onClick={connectWallet}>Sign in with MetaMask</Button>
-  </LoginLayout>
+  </SimpleLayout>
 {:else if canAccessApp}
-  {#if contractTxId}
-    {#if bundlr}
-      <MainLayout account={accounts[0]} {bundlr} {balance}>
-        <div class="main">
-          <div class="uploader">
-            <Uploader
-              {bundlr}
-              {balance}
-              contract={getContract(warp, contractTxId, wallet)}
-              onFinishUpload={handleFinishUpload}
-            />
-          </div>
-          <div class="files">
-            {#if loadingContract}
-              <p>Loading...</p>
-            {:else if owner}
+  {#if bundlr}
+    {#if contractTxId}
+      {#if owner}
+        <MainLayout account={accounts[0]} {bundlr} {balance}>
+          <div class="main">
+            <div class="title">
+              <h2>My public folder</h2>
+              <Uploader
+                {bundlr}
+                {balance}
+                contract={getContract(warp, contractTxId, wallet)}
+                onFinishUpload={handleFinishUpload}
+              />
+            </div>
+            <div class="files">
               <FileList {files} onDeleteFile={handleDeleteFile} />
-            {:else}
-              <Button onClick={initializeContract}>Initialize contract</Button>
-            {/if}
+            </div>
           </div>
-        </div>
-      </MainLayout>
+        </MainLayout>
+      {:else}
+        <SimpleLayout>
+          <Button onClick={initializeContract}>Initialize contract</Button>
+        </SimpleLayout>
+      {/if}
     {:else}
-      <LoginLayout>
-        <Button onClick={connectBundlr}>Connect to Iron</Button>
-      </LoginLayout>
+      <SimpleLayout>
+        <Button onClick={deployContract}>Deploy contract</Button>
+      </SimpleLayout>
     {/if}
   {:else}
-    <LoginLayout>
-      <Button onClick={deployContract}>Deploy contract</Button>
-    </LoginLayout>
+    <SimpleLayout>
+      <Button onClick={connectBundlr}>Connect to Iron</Button>
+    </SimpleLayout>
   {/if}
 {:else}
-  <LoginLayout>
+  <SimpleLayout>
     <TokenGate
       name={TOKEN_GATING_PROJECT_NAME}
       url={TOKEN_GATING_PROJECT_URL}
     />
-  </LoginLayout>
+  </SimpleLayout>
 {/if}
 
 <style>
@@ -311,13 +310,24 @@
     flex-direction: column;
     height: 100%;
   }
-  .uploader {
-    border-bottom: 2px solid #f9f8f8;
-    padding: 20px;
-    height: 88px;
-  }
   .files {
-    padding: 10px 20px;
     flex: 1;
+  }
+  p {
+    font-size: 14px;
+  }
+
+  .title {
+    padding: 10px;
+    border-bottom: 1px solid #f9f8f8;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  h2 {
+    font-weight: 500;
+    font-size: 16px;
+    font-family: "Noto Serif", serif;
   }
 </style>

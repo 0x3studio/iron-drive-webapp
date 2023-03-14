@@ -18,7 +18,7 @@
       <Button
         onClick={() => {
           window.open(url);
-        }}>Get one</Button
+        }}>Get one now!</Button
       >
     </p>
     <p>Refresh this page when it is done.</p>
@@ -30,13 +30,20 @@
     display: flex;
     align-items: center;
     column-gap: 1rem;
-    max-width: 800px;
-    border: 2px solid #f9f8f8;
+    max-width: 600px;
     padding: 20px;
+    background: #f9f8f8;
+    border-radius: 10px;
+    box-shadow: 0px 4px 9px -4px rgba(0, 0, 0, 0.25);
+  }
+  .container p {
+    line-height: 1.4em;
+    font-size: 16px;
   }
   img {
-    width: 150px;
-    height: 150px;
+    width: 180px;
+    height: 180px;
+    border-radius: 5px;
   }
   .container .content {
     display: flex;

@@ -19,6 +19,6 @@
     height: 100vh;
   }
   .content {
-    min-height: 46px;
+    min-height: 44px;
   }
 </style>

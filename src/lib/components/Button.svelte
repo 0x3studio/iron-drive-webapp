@@ -9,42 +9,27 @@
 
 <style>
   button {
-    font-size: 16px;
-    font-weight: 200;
-    letter-spacing: 1px;
+    font-size: 14px;
+    font-weight: 500;
     padding: 13px 20px 13px;
     outline: 0;
-    border: 1px solid black;
+    border: 1px solid #e4e4e4;
     cursor: pointer;
     position: relative;
-    background-color: rgba(0, 0, 0, 0);
+    background-color: #fff;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
-  }
-
-  button:after {
-    content: "";
-    background-color: #ffe54c;
+    font-family: inherit;
+    border-radius: 10px;
     width: 100%;
-    z-index: -1;
-    position: absolute;
-    height: 100%;
-    top: 7px;
-    left: 7px;
-    transition: 0.2s;
+    transition: all 0.2s ease-in-out;
   }
-
-  button:hover:after {
-    top: 0px;
-    left: 0px;
+  button:hover {
+    color: #666;
   }
   button:disabled {
     pointer-events: none;
-    border: 1px solid #aaa;
-  }
-
-  button:disabled:after {
-    background-color: #f9f8f8;
+    opacity: 0.5;
   }
 </style>

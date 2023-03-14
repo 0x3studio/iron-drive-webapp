@@ -2,7 +2,7 @@
   import fileReaderStream from "filereader-stream";
   import { utils } from "ethers";
 
-  import Button from "$lib/components/Button.svelte";
+  import IconButton from "$lib/components/IconButton.svelte";
 
   export let bundlr: any;
   export let balance: any;
@@ -91,16 +91,19 @@
 </script>
 
 {#if uploadStatus === "not_started"}
-  <Button
-    onClick={() => {
-      if (bundlr) {
-        fileInput.click();
-      } else {
-        alert("Please connect with Bundlr to be able to upload files.");
-      }
-    }}>Upload file</Button
-  >
-  <input type="file" on:change={uploadFile} bind:this={fileInput} />
+  <div class="action">
+    <IconButton
+      icon="ic:outline-upload-file"
+      onClick={() => {
+        if (bundlr) {
+          fileInput.click();
+        } else {
+          alert("Please connect with Bundlr to be able to upload files.");
+        }
+      }}
+    />
+    <input type="file" on:change={uploadFile} bind:this={fileInput} />
+  </div>
 {:else if uploadStatus === "working"}
   <p>Uploading...</p>
 {:else if uploadStatus === "done"}
@@ -112,6 +115,11 @@
     display: none;
   }
   p {
-    line-height: 46px;
+    line-height: 20px;
+    font-size: 14px;
+  }
+  .action {
+    color: #04cae5;
+    height: 20px;
   }
 </style>

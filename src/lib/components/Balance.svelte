@@ -1,5 +1,9 @@
 <script lang="ts">
+  import { Jumper } from "svelte-loading-spinners";
+  import Icon from "@iconify/svelte";
   import { utils } from "ethers";
+  import { tooltip } from "svooltip";
+  import "svooltip/styles.css";
 
   import Button from "$lib/components/Button.svelte";
   import IconButton from "$lib/components/IconButton.svelte";
@@ -36,21 +40,38 @@
 </script>
 
 <div class="balance">
-  <h2>Your balance</h2>
+  <div class="title">
+    <h3>Funds</h3>
+    <div
+      class="info"
+      use:tooltip={{
+        content:
+          "You need to fund your account before being able to upload files.<br />Note that files under 100 KB can be uploaded for free.",
+        placement: "top",
+        html: true,
+      }}
+    >
+      <Icon icon="material-symbols:info-outline" />
+    </div>
+  </div>
   <div class="value">
-    <strong>{utils.formatEther(balance.toString()).slice(0, 10)} ETH</strong>
+    <span
+      >{parseFloat(utils.formatEther(balance.toString())).toFixed(10)} ETH</span
+    >
     {#if refreshing}
-      <p>...</p>
+      <Jumper size="20" color="#04cae5" unit="px" duration="1s" />
     {:else}
-      <IconButton
-        onClick={refreshBalance}
-        icon="material-symbols:refresh-rounded">Refresh</IconButton
-      >
+      <span class="action">
+        <IconButton
+          onClick={refreshBalance}
+          icon="material-symbols:refresh-rounded">Refresh</IconButton
+        >
+      </span>
     {/if}
   </div>
-  <div class="action">
+  <div class="add">
     <Button onClick={fund} disabled={fundingStatus !== "not_started"}
-      >Fund</Button
+      >Add funds</Button
     >
   </div>
 </div>
@@ -77,23 +98,57 @@
     display: flex;
     flex-direction: column;
     line-height: 1.25rem;
-    border: 2px solid #f9f8f8;
-    margin-bottom: 1.25rem;
-    padding: 20px;
+    padding: 10px;
+    background: #f9f8f8;
+    border-radius: 10px;
+    box-shadow: 0px 4px 9px -4px rgba(0, 0, 0, 0.25);
   }
-  .balance h2 {
-    font-size: 16px;
+  .title {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  h3 {
+    font-size: 14px;
     font-weight: 500;
     margin-bottom: 0.25rem;
   }
-  .balance .value {
+  .value {
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
     column-gap: 0.25rem;
     line-height: 20px;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 0 10px;
+  }
+
+  .fund {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
   }
   .fund p {
     line-height: 1.4em;
+    font-size: 16px;
+  }
+  .info {
+    color: #04cae5;
+    cursor: help;
+  }
+  .action {
+    color: #04cae5;
+    height: 20px;
   }
 </style>

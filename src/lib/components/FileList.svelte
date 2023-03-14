@@ -30,7 +30,9 @@
           <IconButton
             icon="material-symbols:delete-outline"
             onClick={() => {
-              onDeleteFile(file.id);
+              if (confirm("Are you sure you want to delete this file?")) {
+                onDeleteFile(file.id);
+              }
             }}
           />
         </span>
@@ -44,22 +46,21 @@
 <style>
   ul {
     list-style: none;
-    margin: 0 -1.25rem;
   }
   li {
     display: flex;
     justify-content: space-between;
-    line-height: 2.5rem;
+    padding: 10px;
     align-items: center;
-    padding: 0 1.25rem;
     transition: all 0.2s ease-in-out;
+    font-size: 14px;
+    border-radius: 5px;
   }
   li:hover {
-    background-color: #f9f8f8;
+    background: #fff6a3;
   }
   li span {
     color: #999;
-    padding-right: 2rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -67,16 +68,16 @@
   .name {
     display: flex;
     color: #000;
-    font-size: 1.25rem;
     align-items: center;
     column-gap: 0.25rem;
     width: 60%;
   }
   .name a {
-    font-size: 1rem;
+    font-size: 14px;
     max-width: calc(100% - 1.5rem);
     overflow: hidden;
     text-overflow: ellipsis;
+    text-decoration: none;
   }
   .type {
     width: 20%;
@@ -85,10 +86,16 @@
     width: 15%;
   }
   .action {
+    color: #000;
     width: 5%;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     padding: 0;
+  }
+  p {
+    padding: 5px 10px;
+    font-size: 14px;
+    color: #999;
   }
 </style>

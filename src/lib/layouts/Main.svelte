@@ -1,6 +1,9 @@
 <script lang="ts">
+  import Icon from "@iconify/svelte";
+
   import Account from "$lib/components/Account.svelte";
   import Balance from "$lib/components/Balance.svelte";
+  import IconButton from "$lib/components/IconButton.svelte";
   import Logo from "$lib/components/Logo.svelte";
 
   export let account: any;
@@ -15,9 +18,48 @@
   </header>
 
   <main>
-    <nav>
+    <div class="sidebar">
+      <div class="nav">
+        <div class="section">
+          <div class="title">
+            <h2>Public</h2>
+            <div class="action">
+              <IconButton
+                icon="material-symbols:create-new-folder-outline"
+                onClick={() => {
+                  alert("Creating a new folder is not possible yet...");
+                }}
+              />
+            </div>
+          </div>
+          <nav>
+            <ul>
+              <li class="selected">
+                <Icon icon="material-symbols:folder-outline" />
+                <span>My public folder</span>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div class="section">
+          <div class="title">
+            <h2>Private</h2>
+            <div class="action">
+              <IconButton
+                icon="material-symbols:create-new-folder-outline"
+                onClick={() => {
+                  alert("Creating a new folder is not possible yet...");
+                }}
+              />
+            </div>
+          </div>
+          <nav>
+            <p>This section is empty.</p>
+          </nav>
+        </div>
+      </div>
       <Balance {bundlr} {balance} />
-    </nav>
+    </div>
     <div class="content">
       <slot />
     </div>
@@ -33,20 +75,66 @@
   header {
     display: flex;
     justify-content: space-between;
-    padding: 20px;
+    align-items: center;
+    padding: 0 20px;
     background-color: #f9f8f8;
-    height: 59px;
+    height: 69px;
   }
   main {
     display: flex;
     flex: 1;
   }
-  nav {
+  .sidebar {
     width: 250px;
     padding: 20px;
-    border-right: 2px solid #f9f8f8;
+    border-right: 1px solid #f9f8f8;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   .content {
     flex: 1;
+    padding: 20px;
+  }
+  .section {
+    margin-bottom: 20px;
+  }
+  .title {
+    padding: 10px;
+    border-bottom: 1px solid #f9f8f8;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  h2 {
+    font-weight: 500;
+    font-size: 16px;
+    font-family: "Noto Serif", serif;
+  }
+  nav ul {
+    list-style: none;
+  }
+  nav li {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+    font-weight: 500;
+  }
+  nav li:hover,
+  nav li.selected {
+    background: #fff6a3;
+  }
+  nav p {
+    padding: 5px 10px;
+    font-size: 14px;
+    color: #999;
+  }
+  .action {
+    color: #04cae5;
   }
 </style>
