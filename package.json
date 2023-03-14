@@ -26,6 +26,7 @@
 		"@iconify/svelte": "^3.1.0",
 		"@urql/svelte": "^3.0.3",
 		"@wagmi/core": "^0.9.4",
+		"date-fns": "^2.29.3",
 		"ethers": "^5.7.2",
 		"filereader-stream": "^2.0.0",
 		"svelte-loading-spinners": "^0.3.4",

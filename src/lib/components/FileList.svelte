@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import format from "date-fns/format";
 
   import IconButton from "$lib/components/IconButton.svelte";
 
@@ -24,6 +25,7 @@
             title={file.name}>{formatFilename(file.name)}</a
           >
         </span>
+        <span class="date">{format(file.uploadedAt, "PPpp")}</span>
         <span class="type">{file.type}</span>
         <span class="size">{formatBytes(file.size)}</span>
         <span class="action">
@@ -70,7 +72,7 @@
     color: #000;
     align-items: center;
     column-gap: 0.25rem;
-    width: 60%;
+    width: 40%;
   }
   .name a {
     font-size: 14px;
@@ -79,15 +81,18 @@
     text-overflow: ellipsis;
     text-decoration: none;
   }
+  .date {
+    width: 18%;
+  }
   .type {
-    width: 20%;
+    width: 18%;
   }
   .size {
-    width: 15%;
+    width: 18%;
   }
   .action {
     color: #000;
-    width: 5%;
+    width: 6%;
     display: flex;
     align-items: center;
     justify-content: flex-end;
