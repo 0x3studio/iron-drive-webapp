@@ -9,7 +9,7 @@
   export let contract: any;
   export let onFinishUpload: Function;
 
-  const APP_NAME = "IronMiniDrive";
+  const APP_NAME = "IronDrive";
 
   let fileInput: any;
   let uploadStatus: string = "not_started";
