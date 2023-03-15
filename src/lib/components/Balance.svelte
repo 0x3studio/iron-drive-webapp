@@ -133,6 +133,7 @@
     position: absolute;
     left: 0;
     top: 0;
+    z-index: 100;
     width: 100vw;
     height: 100vh;
     display: flex;

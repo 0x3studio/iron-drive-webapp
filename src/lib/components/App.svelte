@@ -6,6 +6,7 @@
   import { Jumper } from "svelte-loading-spinners";
 
   import Button from "$lib/components/Button.svelte";
+  // import Dropzone from "$lib/components/Dropzone.svelte";
   import FileDetails from "$lib/components/FileDetails.svelte";
   import FileList from "$lib/components/FileList.svelte";
   import TokenGate from "$lib/components/TokenGate.svelte";
@@ -282,6 +283,12 @@
       {#if owner}
         <MainLayout account={accounts[0]} {bundlr} {balance}>
           <div class="main">
+            <!-- <Dropzone
+              {bundlr}
+              {balance}
+              contract={getContract(warp, contractTxId, wallet)}
+              onFinishUpload={handleFinishUpload}
+            /> -->
             <div class="list">
               <div class="title">
                 <h2>My public folder</h2>
@@ -300,7 +307,8 @@
                 />
               </div>
             </div>
-            {#if selectedFile}<div class="details">
+            {#if selectedFile}
+              <div class="details">
                 <FileDetails {selectedFile} onDeleteFile={handleDeleteFile} />
               </div>
             {/if}
@@ -363,6 +371,7 @@
   .main {
     display: flex;
     height: 100%;
+    position: relative;
   }
   .list {
     flex: 1;
@@ -393,7 +402,6 @@
   .action {
     width: 250px;
   }
-
   .title {
     padding: 10px;
     border-bottom: 1px solid #f9f8f8;
