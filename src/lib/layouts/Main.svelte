@@ -82,7 +82,7 @@
   }
   main {
     display: flex;
-    flex: 1;
+    height: calc(100% - 69px);
   }
   .sidebar {
     width: 250px;

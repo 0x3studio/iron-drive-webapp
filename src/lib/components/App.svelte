@@ -367,10 +367,14 @@
   .list {
     flex: 1;
     padding: 20px;
+    height: 100%;
+    overflow: auto;
   }
   .details {
     width: 400px;
     border-left: 1px solid #f9f8f8;
+    height: 100%;
+    overflow: auto;
   }
   .files {
     flex: 1;
