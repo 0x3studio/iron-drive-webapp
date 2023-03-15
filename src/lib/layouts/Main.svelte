@@ -94,7 +94,6 @@
   }
   .content {
     flex: 1;
-    padding: 20px;
   }
   .section {
     margin-bottom: 20px;

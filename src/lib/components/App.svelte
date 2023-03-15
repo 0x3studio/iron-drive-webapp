@@ -272,18 +272,21 @@
       {#if owner}
         <MainLayout account={accounts[0]} {bundlr} {balance}>
           <div class="main">
-            <div class="title">
-              <h2>My public folder</h2>
-              <Uploader
-                {bundlr}
-                {balance}
-                contract={getContract(warp, contractTxId, wallet)}
-                onFinishUpload={handleFinishUpload}
-              />
+            <div class="list">
+              <div class="title">
+                <h2>My public folder</h2>
+                <Uploader
+                  {bundlr}
+                  {balance}
+                  contract={getContract(warp, contractTxId, wallet)}
+                  onFinishUpload={handleFinishUpload}
+                />
+              </div>
+              <div class="files">
+                <FileList {files} onDeleteFile={handleDeleteFile} />
+              </div>
             </div>
-            <div class="files">
-              <FileList {files} onDeleteFile={handleDeleteFile} />
-            </div>
+            <div class="details">&nbsp;</div>
           </div>
         </MainLayout>
       {:else}
@@ -337,8 +340,15 @@
 <style>
   .main {
     display: flex;
-    flex-direction: column;
     height: 100%;
+  }
+  .list {
+    flex: 1;
+    padding: 20px;
+  }
+  .details {
+    width: 400px;
+    border-left: 1px solid #f9f8f8;
   }
   .files {
     flex: 1;
