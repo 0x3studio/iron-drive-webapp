@@ -18,6 +18,10 @@
     font-size: 1.25rem;
     width: 1.25rem;
     height: 1.25rem;
-    color: inherit;
+    color: #04cae5;
+    transition: all 0.2s ease-in-out;
+  }
+  button:hover {
+    color: #666;
   }
 </style>

@@ -136,9 +136,6 @@
     color: #999;
   }
   .action {
-    color: #04cae5;
-  }
-  .action:hover {
-    color: #666;
+    height: 20px;
   }
 </style>

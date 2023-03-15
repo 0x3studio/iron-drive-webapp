@@ -146,17 +146,14 @@
     font-size: 16px;
   }
   .info {
-    color: #04cae5;
+    color: #999;
     cursor: help;
+    transition: all 0.2s ease-in-out;
   }
   .info:hover {
     color: #666;
   }
   .action {
-    color: #04cae5;
     height: 20px;
-  }
-  .action:hover {
-    color: #666;
   }
 </style>
