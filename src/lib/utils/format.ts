@@ -1,15 +1,17 @@
-export const formatFilename = (str: string) => {
-  if (str.length <= 20) {
+export const formatFilename = (str: string, len: number = 30) => {
+  if (str.length <= len) {
     return str;
   }
   const index = str.lastIndexOf(".");
   if (index === -1) {
-    return str.slice(0, 10) + "..." + str.slice(-10);
+    return str.slice(0, len / 2) + "..." + str.slice(-len / 2);
   } else {
     const value = str.substring(0, index);
     const extension = str.substring(index + 1);
 
-    return value.slice(0, 10) + "..." + value.slice(-10) + "." + extension;
+    return (
+      value.slice(0, len / 2) + "..." + value.slice(-len / 2) + "." + extension
+    );
   }
 };
 

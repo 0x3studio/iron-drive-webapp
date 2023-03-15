@@ -122,11 +122,13 @@
     display: flex;
     align-items: center;
     column-gap: 0.5rem;
-    font-weight: 500;
   }
   nav li:hover,
   nav li.selected {
     background: #fff6a3;
+  }
+  nav li.selected {
+    font-weight: 500;
   }
   nav p {
     padding: 5px 10px;
@@ -135,5 +137,8 @@
   }
   .action {
     color: #04cae5;
+  }
+  .action:hover {
+    color: #666;
   }
 </style>

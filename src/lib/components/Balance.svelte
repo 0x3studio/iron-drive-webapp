@@ -149,8 +149,14 @@
     color: #04cae5;
     cursor: help;
   }
+  .info:hover {
+    color: #666;
+  }
   .action {
     color: #04cae5;
     height: 20px;
+  }
+  .action:hover {
+    color: #666;
   }
 </style>

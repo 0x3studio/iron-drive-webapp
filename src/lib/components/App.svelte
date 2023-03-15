@@ -6,6 +6,7 @@
   import { Jumper } from "svelte-loading-spinners";
 
   import Button from "$lib/components/Button.svelte";
+  import FileDetails from "$lib/components/FileDetails.svelte";
   import FileList from "$lib/components/FileList.svelte";
   import TokenGate from "$lib/components/TokenGate.svelte";
   import Uploader from "$lib/components/Uploader.svelte";
@@ -48,6 +49,7 @@
 
   let owner: any = null;
   let files: any = {};
+  let selectedFile: any = null;
 
   const isEnabledTokenGating = () => {
     return TOKEN_GATING_ENABLED === "true";
@@ -228,6 +230,10 @@
   //   }
   // };
 
+  const handleSelectFile = async (file: any) => {
+    selectedFile = file;
+  };
+
   const handleDeleteFile = async (id: string) => {
     const contract = getContract(warp, contractTxId, wallet);
     if (contract) {
@@ -283,10 +289,17 @@
                 />
               </div>
               <div class="files">
-                <FileList {files} onDeleteFile={handleDeleteFile} />
+                <FileList
+                  {files}
+                  onSelectFile={handleSelectFile}
+                  {selectedFile}
+                />
               </div>
             </div>
-            <div class="details">&nbsp;</div>
+            {#if selectedFile}<div class="details">
+                <FileDetails {selectedFile} onDeleteFile={handleDeleteFile} />
+              </div>
+            {/if}
           </div>
         </MainLayout>
       {:else}
@@ -298,7 +311,9 @@
               interact with your contract, forever.
             </div>
             <div class="action">
-              <Button onClick={initializeContract}>Initialize contract</Button>
+              <Button icon="mdi:user-check" onClick={initializeContract}
+                >Initialize contract</Button
+              >
             </div>
           </div>
         </SimpleLayout>
@@ -312,7 +327,10 @@
             possible, every user needs to deploy their own contract.
           </div>
           <div class="action">
-            <Button onClick={deployContract}>Deploy contract</Button>
+            <Button
+              icon="material-symbols:rocket-launch-outline"
+              onClick={deployContract}>Deploy contract</Button
+            >
           </div>
         </div>
       </SimpleLayout>

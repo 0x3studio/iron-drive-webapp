@@ -122,4 +122,7 @@
     color: #04cae5;
     height: 20px;
   }
+  .action:hover {
+    color: #666;
+  }
 </style>

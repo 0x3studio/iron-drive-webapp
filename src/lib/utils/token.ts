@@ -29,6 +29,5 @@ export const ownsToken = async (
     args: [accountAddress],
   });
 
-  // return data.toNumber() > 0;
-  return true;
+  return data.toNumber() > 0;
 };

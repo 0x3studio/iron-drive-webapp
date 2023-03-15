@@ -1,102 +1,102 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import format from "date-fns/format";
+  import { formatDistance } from "date-fns";
 
-  import IconButton from "$lib/components/IconButton.svelte";
-
-  import { formatFilename, formatBytes } from "$lib/utils/format";
+  import { formatBytes } from "$lib/utils/format";
 
   export let files: any;
-  export let onDeleteFile: Function;
-
-  const ARWEAVE_GATEWAY_URL = import.meta.env.VITE_ARWEAVE_GATEWAY_URL;
+  export let selectedFile: any;
+  export let onSelectFile: Function;
 </script>
 
 {#if Object.keys(files).length > 0}
-  <ul>
+  <table cellpadding="0" cellspacing="0">
     {#each Object.values(files) as file, i}
-      <li>
-        <span class="name">
-          <Icon icon="ic:outline-insert-drive-file" />
-          <a
-            href="{ARWEAVE_GATEWAY_URL}/{file.id}"
-            target="_blank"
-            rel="noreferrer"
-            title={file.name}>{formatFilename(file.name)}</a
-          >
-        </span>
-        <span class="date">{format(file.uploadedAt, "PPpp")}</span>
-        <span class="type">{file.type}</span>
-        <span class="size">{formatBytes(file.size)}</span>
-        <span class="action">
-          <IconButton
-            icon="material-symbols:delete-outline"
-            onClick={() => {
-              if (confirm("Are you sure you want to delete this file?")) {
-                onDeleteFile(file.id);
-              }
-            }}
-          />
-        </span>
-      </li>
+      <tr
+        on:click={() => {
+          onSelectFile(file);
+        }}
+        on:keypress={() => {}}
+        class:selected={selectedFile && selectedFile.id === file.id}
+      >
+        <td class="name">
+          <span><Icon icon="ic:outline-insert-drive-file" /></span>
+          <span>{file.name}</span>
+        </td>
+        <td class="date"
+          >{formatDistance(file.uploadedAt, new Date(), {
+            addSuffix: true,
+          })}</td
+        >
+        <td class="type">{file.type}</td>
+        <td class="size">{formatBytes(file.size)}</td>
+      </tr>
     {/each}
-  </ul>
+  </table>
 {:else}
   <p>No files uploaded yet.</p>
 {/if}
 
 <style>
-  ul {
-    list-style: none;
+  table {
+    width: 100%;
   }
-  li {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    align-items: center;
+  tr {
     transition: all 0.2s ease-in-out;
-    font-size: 14px;
-    border-radius: 5px;
   }
-  li:hover {
+  tr:hover,
+  tr.selected {
     background: #fff6a3;
   }
-  li span {
+  td:first-child {
+    border-radius: 5px 0 0 5px;
+  }
+  td:last-child {
+    border-radius: 0 5px 5px 0;
+  }
+
+  td {
+    font-size: 14px;
+    line-height: 1em;
     color: #999;
+    max-width: 0;
+    padding: 10px;
+    cursor: pointer;
+  }
+  .name {
+    color: #000;
+    width: 55%;
+  }
+  .name span {
+    float: left;
+  }
+  .name span:first-child {
+    width: 22px;
+  }
+  .name span:last-child {
+    width: calc(100% - 22px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .name {
-    display: flex;
-    color: #000;
-    align-items: center;
-    column-gap: 0.25rem;
-    width: 40%;
-  }
-  .name a {
-    font-size: 14px;
-    max-width: calc(100% - 1.5rem);
+  .date,
+  .type,
+  .size {
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-decoration: none;
   }
   .date {
-    width: 18%;
+    width: 20%;
   }
   .type {
-    width: 18%;
+    width: 15%;
   }
   .size {
-    width: 18%;
+    width: 10%;
   }
-  .action {
-    color: #000;
-    width: 6%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding: 0;
+  tr.selected .name {
+    font-weight: 500;
   }
   p {
     padding: 5px 10px;

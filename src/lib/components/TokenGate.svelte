@@ -16,6 +16,7 @@
     </p>
     <p>
       <Button
+        icon="icon-park-outline:buy"
         onClick={() => {
           window.open(url);
         }}>Get one now!</Button
@@ -30,7 +31,7 @@
     display: flex;
     align-items: center;
     column-gap: 1rem;
-    max-width: 600px;
+    max-width: 500px;
     padding: 20px;
     background: #f9f8f8;
     border-radius: 10px;
