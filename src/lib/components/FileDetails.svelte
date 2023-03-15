@@ -133,6 +133,7 @@
   .info a {
     text-decoration: none;
     color: #04cae5;
+    transition: all 0.2s ease-in-out;
   }
   .info a:hover {
     color: #666;
