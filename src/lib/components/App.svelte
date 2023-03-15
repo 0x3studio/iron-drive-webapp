@@ -254,6 +254,10 @@
   init();
 </script>
 
+<svelte:head>
+  <title>Iron Drive by 0x3 Studio</title>
+</svelte:head>
+
 {#if loadingWallet}
   <SimpleLayout>
     <Jumper size="44" color="#04cae5" unit="px" duration="1s" />
