@@ -145,7 +145,10 @@
   };
 
   const connectBundlr = async () => {
-    const provider = new providers.Web3Provider(window.ethereum);
+    const provider = new providers.Web3Provider(window.ethereum, {
+      name: "homestead",
+      chainId: 1,
+    });
     await provider._ready();
 
     const _bundlr = new WebBundlr(
