@@ -4,6 +4,7 @@
   export let bundlr: any;
   export let balance: any;
   export let contract: any;
+  export let chainId: string;
   export let onFinishUpload: Function;
 
   let dragging: boolean = false;
@@ -42,13 +43,13 @@
 
     if (files) {
       const file = files[0];
-      console.log(file);
 
       uploadFile(
         file,
         bundlr,
         balance,
         contract,
+        chainId,
         onFinishUpload,
         onStatusChange
       );

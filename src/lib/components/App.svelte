@@ -15,7 +15,7 @@
   import SimpleLayout from "$lib/layouts/Simple.svelte";
   import MainLayout from "$lib/layouts/Main.svelte";
 
-  import { chainIdToName } from "$lib/utils/chain";
+  import { chainInfo } from "$lib/utils/chain";
   import { getContract } from "$lib/utils/contract";
   import { ownsToken } from "$lib/utils/token";
 
@@ -96,8 +96,9 @@
       chainId = await window.ethereum.request({ method: "eth_chainId" });
       accounts = await window.ethereum.request({ method: "eth_accounts" });
 
-      window.ethereum.on("chainChanged", (_chainId: string) => {
+      window.ethereum.on("chainChanged", async (_chainId: string) => {
         chainId = _chainId;
+        bundlr = null;
       });
 
       window.ethereum.on("accountsChanged", async (_accounts: any) => {
@@ -116,7 +117,7 @@
       const _warp = WarpFactory.forMainnet();
       const _wallet = {
         signer: evmSignature,
-        signatureType: chainIdToName(chainId),
+        signatureType: "ethereum",
       };
 
       warp = _warp;
@@ -145,15 +146,12 @@
   };
 
   const connectBundlr = async () => {
-    const provider = new providers.Web3Provider(window.ethereum, {
-      name: "homestead",
-      chainId: 1,
-    });
+    const provider = new providers.Web3Provider(window.ethereum);
     await provider._ready();
 
     const _bundlr = new WebBundlr(
       BUNDLR_NODE_URL,
-      chainIdToName(chainId),
+      chainInfo(chainId).name,
       provider
     );
     await _bundlr.ready();
@@ -266,10 +264,10 @@
   <SimpleLayout>
     <Jumper size="44" color="#04cae5" unit="px" duration="1s" />
   </SimpleLayout>
-{:else if chainId !== "0x1"}
+{:else if chainId !== "0x1" && chainId !== "0x89"}
   <SimpleLayout>
     <div class="simple">
-      <div class="info">Please connect to Ethereum Mainnet.</div>
+      <div class="info">Please connect to Ethereum or Polygon Mainnet.</div>
     </div>
   </SimpleLayout>
 {:else if accounts.length === 0}
@@ -284,11 +282,12 @@
   {#if bundlr}
     {#if contractTxId}
       {#if owner}
-        <MainLayout account={accounts[0]} {bundlr} {balance}>
+        <MainLayout account={accounts[0]} {bundlr} {balance} {chainId}>
           <div class="main">
             <!-- <Dropzone
               {bundlr}
               {balance}
+              {chainId}
               contract={getContract(warp, contractTxId, wallet)}
               onFinishUpload={handleFinishUpload}
             /> -->
@@ -298,6 +297,7 @@
                 <Uploader
                   {bundlr}
                   {balance}
+                  {chainId}
                   contract={getContract(warp, contractTxId, wallet)}
                   onFinishUpload={handleFinishUpload}
                 />
@@ -355,7 +355,7 @@
       <div class="simple">
         <div class="action">
           <Button onClick={connectBundlr} icon="material-symbols:login"
-            >Connect to Iron</Button
+            >Connect to Bundlr</Button
           >
         </div>
       </div>

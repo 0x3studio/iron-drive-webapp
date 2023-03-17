@@ -9,6 +9,7 @@
   export let account: any;
   export let bundlr: any;
   export let balance: any;
+  export let chainId: string;
 </script>
 
 <div class="container">
@@ -58,7 +59,7 @@
           </nav>
         </div>
       </div>
-      <Balance {bundlr} {balance} />
+      <Balance {bundlr} {balance} {chainId} />
     </div>
     <div class="content">
       <slot />

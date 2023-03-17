@@ -1,18 +1,40 @@
 <script lang="ts">
   import { Jumper } from "svelte-loading-spinners";
   import Icon from "@iconify/svelte";
-  import { utils } from "ethers";
   import { tooltip } from "svooltip";
   import "svooltip/styles.css";
 
   import Button from "$lib/components/Button.svelte";
   import IconButton from "$lib/components/IconButton.svelte";
 
+  import { chainInfo } from "$lib/utils/chain";
+
   export let bundlr: any;
   export let balance: any;
+  export let chainId: string;
 
   let refreshing: boolean = false;
   let fundingStatus: string = "not_started";
+
+  const getAmount = (chainId: string) => {
+    let amount;
+    switch (chainId) {
+      case "0x1": {
+        // 0.0001 ETH
+        amount = 100000000000000;
+        break;
+      }
+      case "0x89": {
+        // 0.1 MATIC
+        amount = 100000000000000000;
+        break;
+      }
+      default: {
+        amount = 0;
+      }
+    }
+    return amount;
+  };
 
   const refreshBalance = async () => {
     refreshing = true;
@@ -27,13 +49,20 @@
   const fund = async () => {
     fundingStatus = "working";
     try {
-      await bundlr.fund(100000000000000); // 0.0001 ETH (TODO: people can choose how much they want to fund)
+      await bundlr.fund(getAmount(chainId));
       balance = await bundlr.getLoadedBalance();
       fundingStatus = "done";
       setTimeout(() => {
         fundingStatus = "not_started";
       }, 5000);
-    } catch (err) {
+    } catch (err: any) {
+      if (err.message.includes("insufficient funds")) {
+        alert(
+          `You don’t have enough ${
+            chainInfo(chainId).symbol
+          } in your wallet to fund your account.`
+        );
+      }
       fundingStatus = "not_started";
     }
   };
@@ -56,7 +85,8 @@
   </div>
   <div class="value">
     <span
-      >{parseFloat(utils.formatEther(balance.toString())).toFixed(10)} ETH</span
+      >{bundlr.utils.unitConverter(balance).toFixed(10)}
+      {chainInfo(chainId).symbol}</span
     >
     {#if refreshing}
       <Jumper size="20" color="#04cae5" unit="px" duration="1s" />

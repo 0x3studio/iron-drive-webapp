@@ -6,6 +6,7 @@
   export let bundlr: any;
   export let balance: any;
   export let contract: any;
+  export let chainId: string;
   export let onFinishUpload: Function;
 
   let fileInput: any;
@@ -24,6 +25,7 @@
         bundlr,
         balance,
         contract,
+        chainId,
         onFinishUpload,
         onStatusChange
       );

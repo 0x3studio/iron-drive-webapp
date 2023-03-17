@@ -1,13 +1,15 @@
 import fileReaderStream from "filereader-stream";
-import { utils } from "ethers";
 
-const APP_NAME = "IronMiniDrive";
+import { chainInfo } from "$lib/utils/chain";
+
+const APP_NAME = "IronDrive";
 
 export const uploadFile = async (
   file: any,
   bundlr: any,
   balance: any,
   contract: any,
+  chainId: string,
   onFinishUpload: Function,
   onStatusChange: Function
 ) => {
@@ -17,9 +19,9 @@ export const uploadFile = async (
     if (
       file.size < 100000 ||
       confirm(
-        `It will cost ${utils.formatEther(
-          price.toString()
-        )} ETH to upload that file. Do you want to continue?`
+        `It will cost ${bundlr.utils.unitConverter(price).toFixed(10)} ${
+          chainInfo(chainId).symbol
+        } to upload that file. Do you want to continue?`
       )
     ) {
       onStatusChange("working");

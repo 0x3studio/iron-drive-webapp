@@ -1,17 +1,17 @@
-export const chainIdToName = (chainId: string) => {
-  let chainName;
+export const chainInfo = (chainId: string) => {
+  let info;
   switch (chainId) {
     case "0x1": {
-      chainName = "ethereum";
+      info = { name: "ethereum", symbol: "ETH" };
       break;
     }
     case "0x89": {
-      chainName = "matic";
+      info = { name: "matic", symbol: "MATIC" };
       break;
     }
     default: {
-      chainName = "unknown";
+      info = { name: "unknown", symbol: "???" };
     }
   }
-  return chainName;
+  return info;
 };
