@@ -7,6 +7,7 @@
   import { formatBytes, formatFilename } from "$lib/utils/format";
 
   export let selectedFile: any;
+  export let contractTxId: string;
   export let onDeleteFile: Function;
 
   let copied: boolean = false;
@@ -39,7 +40,7 @@
   <div class="overview">
     {#if selectedFile.type.startsWith("image/")}
       <img
-        src="{ARWEAVE_GATEWAY_URL}/{selectedFile.id}"
+        src="{ARWEAVE_GATEWAY_URL}/{selectedFile.txId}"
         alt={selectedFile.name}
       />
     {:else}
@@ -57,13 +58,13 @@
     <div>{formatBytes(selectedFile.size)}</div>
     <div class="external">
       <a
-        href="{ARWEAVE_GATEWAY_URL}/{selectedFile.id}"
+        href="{ARWEAVE_GATEWAY_URL}/{selectedFile.txId}"
         target="_blank"
         rel="noreferrer"
         title={selectedFile.name}
         download={selectedFile.name}
       >
-        <span>{formatFilename(selectedFile.id)}</span>
+        <span>{formatFilename(selectedFile.txId)}</span>
         <Icon icon="mingcute:external-link-line" />
       </a>
     </div>
@@ -71,7 +72,9 @@
   <div class="actions">
     <Button
       onClick={() => {
-        copyToClipboard(`${ARWEAVE_GATEWAY_URL}/${selectedFile.id}`);
+        copyToClipboard(
+          `${window.location.origin}/${contractTxId}/${selectedFile.id}`
+        );
         copied = true;
         setTimeout(() => {
           copied = false;
@@ -91,7 +94,7 @@
     <Button
       onClick={() => {
         forceDownload(
-          `${ARWEAVE_GATEWAY_URL}/${selectedFile.id}`,
+          `${ARWEAVE_GATEWAY_URL}/${selectedFile.txId}`,
           selectedFile.name
         );
       }}

@@ -2,6 +2,10 @@
   import { providers } from "ethers";
   import { WebBundlr } from "@bundlr-network/client";
   import { WarpFactory } from "warp-contracts";
+  import {
+    DeployPlugin,
+    InjectedEthereumSigner,
+  } from "warp-contracts-plugin-deploy";
   import { evmSignature } from "warp-contracts-plugin-signature";
   import { Jumper } from "svelte-loading-spinners";
 
@@ -16,13 +20,12 @@
   import MainLayout from "$lib/layouts/Main.svelte";
 
   import { chainInfo } from "$lib/utils/chain";
-  import { getContract } from "$lib/utils/contract";
   import { ownsToken } from "$lib/utils/token";
 
   // const MAIN_CONTRACT_SOURCE_TX_ID =
-  //   "O-PVoMglLhU0I0X_eICIEWT4_YYFLP062Kg3WNT0yxs";
+  //   "0HMxzcYa2Y9HHK_e3wWFdnY0v8Hm_02MH_m0c3pDZBo";
   const INDIVIDUAL_CONTRACT_SOURCE_TX_ID =
-    "n7uP8YWizv7zBYLNrOl8tGckZg-Aaj_3Ek1x-7Pyok4";
+    "-IWEnJNOA_xlaXV_cr-71kkq5XDgdIBfH2xqOffxOlY";
 
   const ARWEAVE_GATEWAY_URL = import.meta.env.VITE_ARWEAVE_GATEWAY_URL;
   const BUNDLR_NODE_URL = import.meta.env.VITE_BUNDLR_NODE_URL;
@@ -46,7 +49,6 @@
   let balance: any;
 
   let warp: any;
-  let wallet: any;
 
   let owner: any = null;
   let files: any = {};
@@ -69,6 +71,13 @@
   const getContractTxId = async () => {
     if (accounts.length > 0) {
       const mainContract = getMainContract();
+      // const result = (
+      //   await mainContract.getStorageValues([accounts[0].toLowerCase(), "xyz"])
+      // ).cachedValue;
+      // const value = result.get(accounts[0].toLowerCase());
+      // if (value) {
+      //   return value;
+      // }
       const { cachedValue } = await mainContract.readState();
       const key = Object.keys(cachedValue.state.users).find(
         (key) => key.toLowerCase() === accounts[0].toLowerCase()
@@ -82,7 +91,7 @@
   };
 
   const loadContract = async () => {
-    const contract = getContract(warp, contractTxId, wallet);
+    const contract = getContract();
 
     if (contract) {
       const { cachedValue } = await contract.readState();
@@ -114,14 +123,7 @@
         loadContract();
       });
 
-      const _warp = WarpFactory.forMainnet();
-      const _wallet = {
-        signer: evmSignature,
-        signatureType: "ethereum",
-      };
-
-      warp = _warp;
-      wallet = _wallet;
+      warp = WarpFactory.forMainnet().use(new DeployPlugin());
 
       canAccessApp = await getCanAccessApp();
       contractTxId = await getContractTxId();
@@ -147,7 +149,6 @@
 
   const connectBundlr = async () => {
     const provider = new providers.Web3Provider(window.ethereum);
-    await provider._ready();
 
     const _bundlr = new WebBundlr(
       BUNDLR_NODE_URL,
@@ -163,7 +164,19 @@
   };
 
   const getMainContract = () => {
-    const contract = warp.contract(MAIN_CONTRACT_WARP_TX_ID).connect(wallet);
+    const contract = warp
+      .contract(MAIN_CONTRACT_WARP_TX_ID)
+      .connect({ signatureType: "ethereum", signer: evmSignature });
+    return contract;
+  };
+
+  const getContract = () => {
+    if (!contractTxId) {
+      return null;
+    }
+    const contract = warp
+      .contract(contractTxId)
+      .connect({ signatureType: "ethereum", signer: evmSignature });
     return contract;
   };
 
@@ -173,14 +186,22 @@
   //   );
   //   const source = await response.text();
 
+  //   const provider = new providers.Web3Provider(window.ethereum);
+  //   const userSigner = new InjectedEthereumSigner(provider);
+  //   await userSigner.setPublicKey();
+
   //   const { contractTxId: _contractTxId } = await warp.deploy({
-  //     wallet,
+  //     wallet: userSigner,
   //     initState: JSON.stringify({
-  //       users: {},
   //       owner: null,
   //       canEvolve: true,
   //     }),
   //     src: source,
+  //     evaluationManifest: {
+  //       evaluationOptions: {
+  //         useKVStorage: true,
+  //       },
+  //     },
   //   });
 
   //   console.log(_contractTxId);
@@ -192,8 +213,12 @@
     );
     const source = await response.text();
 
+    const provider = new providers.Web3Provider(window.ethereum);
+    const userSigner = new InjectedEthereumSigner(provider);
+    await userSigner.setPublicKey();
+
     const { contractTxId: _contractTxId } = await warp.deploy({
-      wallet,
+      wallet: userSigner,
       initState: JSON.stringify({
         files: {},
         owner: null,
@@ -212,8 +237,18 @@
     contractTxId = _contractTxId;
   };
 
+  // const initializeMainContract = async () => {
+  //   const contract = getMainContract();
+  //   if (contract) {
+  //     await contract.writeInteraction({
+  //       function: "initialize",
+  //     });
+  //     owner = accounts[0];
+  //   }
+  // };
+
   const initializeContract = async () => {
-    const contract = getContract(warp, contractTxId, wallet);
+    const contract = getContract();
     if (contract) {
       await contract.writeInteraction({
         function: "initialize",
@@ -237,7 +272,7 @@
   };
 
   const handleDeleteFile = async (id: string) => {
-    const contract = getContract(warp, contractTxId, wallet);
+    const contract = getContract();
     if (contract) {
       await contract.writeInteraction({
         function: "deleteFile",
@@ -246,6 +281,7 @@
         },
       });
       files = delete files[id] && files;
+      selectedFile = null;
     }
   };
 
@@ -288,7 +324,7 @@
               {bundlr}
               {balance}
               {chainId}
-              contract={getContract(warp, contractTxId, wallet)}
+              contract={getContract()}
               onFinishUpload={handleFinishUpload}
             /> -->
             <div class="list">
@@ -298,7 +334,7 @@
                   {bundlr}
                   {balance}
                   {chainId}
-                  contract={getContract(warp, contractTxId, wallet)}
+                  contract={getContract()}
                   onFinishUpload={handleFinishUpload}
                 />
               </div>
@@ -312,7 +348,11 @@
             </div>
             {#if selectedFile}
               <div class="details">
-                <FileDetails {selectedFile} onDeleteFile={handleDeleteFile} />
+                <FileDetails
+                  {selectedFile}
+                  {contractTxId}
+                  onDeleteFile={handleDeleteFile}
+                />
               </div>
             {/if}
           </div>

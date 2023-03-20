@@ -1,8 +1,8 @@
-export function handle(state, action) {
+export async function handle(state, action) {
   switch (action.input.function) {
     case "evolve": {
       if (state.canEvolve) {
-        if (action.caller !== state.owner) {
+        if (action.caller.toLowerCase() !== state.owner) {
           throw new ContractError(
             "Only the owner of the contract can call this function."
           );
@@ -15,22 +15,21 @@ export function handle(state, action) {
       if (state.owner !== null) {
         throw new ContractError("This contract has already been initialized.");
       }
-      state.owner = action.caller;
+      state.owner = action.caller.toLowerCase();
       break;
     }
     case "createUser": {
-      if (state.users[action.caller]) {
+      if (await SmartWeave.kv.get(action.caller.toLowerCase())) {
         throw new ContractError("There is already a contract for that user.");
       }
-      const users = state.users;
-      users[action.caller] = action.input.contractTxId;
-      state.users = users;
+      await SmartWeave.kv.put(
+        action.caller.toLowerCase(),
+        action.input.contractTxId
+      );
       break;
     }
     case "deleteUser": {
-      const users = state.users;
-      delete users[action.caller];
-      state.users = users;
+      await SmartWeave.kv.put(action.caller.toLowerCase(), "");
       break;
     }
     default: {

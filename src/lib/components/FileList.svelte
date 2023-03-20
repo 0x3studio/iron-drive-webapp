@@ -12,25 +12,27 @@
 {#if Object.keys(files).length > 0}
   <table cellpadding="0" cellspacing="0">
     {#each Object.values(files) as file, i}
-      <tr
-        on:click={() => {
-          onSelectFile(file);
-        }}
-        on:keypress={() => {}}
-        class:selected={selectedFile && selectedFile.id === file.id}
-      >
-        <td class="name">
-          <span><Icon icon="ic:outline-insert-drive-file" /></span>
-          <span>{file.name}</span>
-        </td>
-        <td class="date"
-          >{formatDistance(file.uploadedAt, new Date(), {
-            addSuffix: true,
-          })}</td
+      {#if file.txId}
+        <tr
+          on:click={() => {
+            onSelectFile(file);
+          }}
+          on:keypress={() => {}}
+          class:selected={selectedFile && selectedFile.id === file.id}
         >
-        <td class="type">{file.type}</td>
-        <td class="size">{formatBytes(file.size)}</td>
-      </tr>
+          <td class="name">
+            <span><Icon icon="ic:outline-insert-drive-file" /></span>
+            <span>{file.name}</span>
+          </td>
+          <td class="date"
+            >{formatDistance(file.uploadedAt, new Date(), {
+              addSuffix: true,
+            })}</td
+          >
+          <td class="type">{file.type}</td>
+          <td class="size">{formatBytes(file.size)}</td>
+        </tr>
+      {/if}
     {/each}
   </table>
 {:else}

@@ -31,7 +31,9 @@
 		"filereader-stream": "^2.0.0",
 		"svelte-loading-spinners": "^0.3.4",
 		"svooltip": "^0.5.1",
-		"warp-contracts": "^1.2.51",
+		"uuid": "^9.0.0",
+		"warp-contracts": "1.2.56",
+		"warp-contracts-plugin-deploy": "^1.0.0",
 		"warp-contracts-plugin-signature": "^1.0.9"
 	}
 }

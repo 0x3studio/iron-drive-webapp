@@ -1,4 +1,5 @@
 import fileReaderStream from "filereader-stream";
+import { v4 as uuidv4 } from "uuid";
 
 import { chainInfo } from "$lib/utils/chain";
 
@@ -50,7 +51,8 @@ export const uploadFile = async (
               type: file.type,
               name: file.name,
               uploadedAt: Date.now(),
-              id: res.data.id,
+              txId: res.data.id,
+              id: uuidv4(),
             };
 
             await contract.writeInteraction({
