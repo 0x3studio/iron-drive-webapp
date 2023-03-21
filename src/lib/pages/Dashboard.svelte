@@ -168,7 +168,7 @@
   const getMainContract = () => {
     const contract = warp
       .contract(MAIN_CONTRACT_WARP_TX_ID)
-      .connect({ signatureType: "ethereum", signer: evmSignature });
+      .connect({ type: "ethereum", signer: evmSignature });
     return contract;
   };
 
@@ -178,7 +178,7 @@
     }
     const contract = warp
       .contract(contractTxId)
-      .connect({ signatureType: "ethereum", signer: evmSignature });
+      .connect({ type: "ethereum", signer: evmSignature });
     return contract;
   };
 

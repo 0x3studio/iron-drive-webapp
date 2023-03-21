@@ -3,13 +3,19 @@
 
   import { browser } from "$app/environment";
 
+  export let data: any;
+
   let Page: any = null;
 
   onMount(async () => {
     if (browser) {
-      Page = (await import("$lib/pages/Dashboard.svelte")).default;
+      Page = (await import("$lib/pages/File.svelte")).default;
     }
   });
 </script>
 
-<svelte:component this={Page} />
+<svelte:component
+  this={Page}
+  contractTxId={data.contractTxId}
+  uuid={data.uuid}
+/>
