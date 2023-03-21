@@ -72,7 +72,7 @@
     if (accounts.length > 0) {
       const mainContract = getMainContract();
       // const result = (
-      //   await mainContract.getStorageValues([accounts[0].toLowerCase(), "xyz"])
+      //   await mainContract.getStorageValues([accounts[0].toLowerCase()])
       // ).cachedValue;
       // const value = result.get(accounts[0].toLowerCase());
       // if (value) {
