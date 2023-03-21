@@ -123,7 +123,9 @@
         loadContract();
       });
 
-      warp = WarpFactory.forMainnet().use(new DeployPlugin());
+      warp = WarpFactory.forMainnet({ inMemory: true, dbLocation: "2" }).use(
+        new DeployPlugin()
+      );
 
       canAccessApp = await getCanAccessApp();
       contractTxId = await getContractTxId();
