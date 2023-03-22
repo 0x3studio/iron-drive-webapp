@@ -130,13 +130,13 @@
     display: flex;
     flex-direction: column;
     row-gap: 0.5rem;
-    color: #999;
+    color: var(--color-text-secondary);
     margin-bottom: 1.5rem;
   }
   .info a {
     text-decoration: none;
     color: #04cae5;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.75s cubic-bezier(0.075, 0.82, 0.165, 1);
   }
   .info a:hover {
     color: #666;

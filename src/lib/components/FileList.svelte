@@ -4,10 +4,20 @@
 
   import { formatBytes } from "$lib/utils/format";
 
-  export let files: any;
+  export let files: any[];
   export let selectedFile: any;
   export let onSelectFile: Function;
+
+  function handleMsDown(e: MouseEvent) {
+    const t = e.target as HTMLElement;
+    if (t.classList.contains("list")) {
+      selectedFile = null;
+      onSelectFile(null);
+    }
+  }
 </script>
+
+<svelte:window on:mousedown={handleMsDown} />
 
 {#if Object.keys(files).length > 0}
   <table cellpadding="0" cellspacing="0">
@@ -36,7 +46,7 @@
     {/each}
   </table>
 {:else}
-  <p>No files uploaded yet.</p>
+  <p>No files uploaded yet. Drag and drop one here!</p>
 {/if}
 
 <style>
@@ -44,11 +54,11 @@
     width: 100%;
   }
   tr {
-    transition: all 0.2s ease-in-out;
+    transition: all 0.75s cubic-bezier(0.075, 0.82, 0.165, 1);
   }
   tr:hover,
   tr.selected {
-    background: #fff6a3;
+    background: var(--color-primary);
   }
   td:first-child {
     border-radius: 5px 0 0 5px;
@@ -60,7 +70,7 @@
   td {
     font-size: 14px;
     line-height: 1em;
-    color: #999;
+    color: var(--color-text-secondary);
     max-width: 0;
     padding: 10px;
     cursor: pointer;
@@ -87,6 +97,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 300;
   }
   .date {
     width: 20%;
@@ -103,6 +114,6 @@
   p {
     padding: 5px 10px;
     font-size: 14px;
-    color: #999;
+    color: var(--color-text-secondary);
   }
 </style>

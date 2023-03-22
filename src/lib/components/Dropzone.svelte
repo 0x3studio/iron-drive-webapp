@@ -81,7 +81,7 @@
     justify-content: center;
   }
   .dropzone.dragging {
-    border-color: #04cae5;
+    border-color: var(--color-secondary);
   }
 
   .dropzone p {
