@@ -1,7 +1,8 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { formatDistance } from "date-fns";
-
+  import { fly } from "svelte/transition";
+  import { circInOut } from "svelte/easing";
   import Button from "$lib/components/Button.svelte";
 
   import { formatBytes, formatFilename } from "$lib/utils/format";
@@ -36,7 +37,10 @@
   };
 </script>
 
-<div class="container">
+<div
+  class="container"
+  transition:fly={{ x: 400, duration: 450, easing: circInOut }}
+>
   <div class="overview">
     {#if selectedFile.type.startsWith("image/")}
       <img
