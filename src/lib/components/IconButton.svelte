@@ -18,7 +18,7 @@
     font-size: 1.25rem;
     width: 1.25rem;
     height: 1.25rem;
-    color: #04cae5;
+    color: var(--color-secondary);
     transition: all 0.2s ease-in-out;
   }
   button:hover {

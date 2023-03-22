@@ -177,12 +177,15 @@
     font-size: 16px;
   }
   .info {
-    color: #999;
+    color: var(--color-text-secondary);
     cursor: help;
     transition: all 0.2s ease-in-out;
   }
   .info:hover {
     color: #666;
+  }
+  :global(.svooltip) {
+    padding: 0.8rem;
   }
   .action {
     height: 20px;

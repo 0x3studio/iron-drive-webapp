@@ -108,9 +108,9 @@
     justify-content: space-between;
   }
   h2 {
-    font-weight: 500;
+    font-weight: 400;
     font-size: 16px;
-    font-family: "Noto Serif", serif;
+    font-family: "Noto Serif Display", serif;
   }
   nav ul {
     list-style: none;
@@ -126,7 +126,7 @@
   }
   nav li:hover,
   nav li.selected {
-    background: #fff6a3;
+    background: var(--color-primary);
   }
   nav li.selected {
     font-weight: 500;
@@ -134,7 +134,7 @@
   nav p {
     padding: 5px 10px;
     font-size: 14px;
-    color: #999;
+    color: var(--color-text-secondary);
   }
   .action {
     height: 20px;

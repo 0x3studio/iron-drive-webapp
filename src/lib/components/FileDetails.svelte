@@ -1,7 +1,8 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { formatDistance } from "date-fns";
-
+  import { fly } from "svelte/transition";
+  import { circInOut } from "svelte/easing";
   import Button from "$lib/components/Button.svelte";
 
   import { formatBytes, formatFilename } from "$lib/utils/format";
@@ -36,7 +37,10 @@
   };
 </script>
 
-<div class="container">
+<div
+  class="container"
+  transition:fly={{ x: 400, duration: 450, easing: circInOut }}
+>
   <div class="overview">
     {#if selectedFile.type.startsWith("image/")}
       <img
@@ -130,13 +134,13 @@
     display: flex;
     flex-direction: column;
     row-gap: 0.5rem;
-    color: #999;
+    color: var(--color-text-secondary);
     margin-bottom: 1.5rem;
   }
   .info a {
     text-decoration: none;
     color: #04cae5;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.75s cubic-bezier(0.075, 0.82, 0.165, 1);
   }
   .info a:hover {
     color: #666;

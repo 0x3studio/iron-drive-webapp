@@ -76,7 +76,7 @@
   }
   .dropzone.dragging {
     opacity: 1;
-    border: 3px dashed #04cae5;
+    border: 3px dashed var(--color-secondary);
     z-index: 1;
     background: rgba(255, 255, 255, 0.5);
   }

@@ -33,12 +33,14 @@
     font-family: inherit;
     border-radius: 10px;
     width: 100%;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.75s cubic-bezier(0.085, 0.82, 0.165, 1);
     display: flex;
     align-items: center;
   }
   button:hover {
-    color: #666;
+    color: black;
+    background: var(--color-primary);
+    border: 1px solid #ffe0a3;
   }
   button:disabled {
     pointer-events: none;
