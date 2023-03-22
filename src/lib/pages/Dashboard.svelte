@@ -10,7 +10,7 @@
   import { Jumper } from "svelte-loading-spinners";
 
   import Button from "$lib/components/Button.svelte";
-  // import Dropzone from "$lib/components/Dropzone.svelte";
+  import Dropzone from "$lib/components/Dropzone.svelte";
   import FileDetails from "$lib/components/FileDetails.svelte";
   import FileList from "$lib/components/FileList.svelte";
   import TokenGate from "$lib/components/TokenGate.svelte";
@@ -322,41 +322,43 @@
       {#if owner}
         <MainLayout account={accounts[0]} {bundlr} {balance} {chainId}>
           <div class="main">
-            <!-- <Dropzone
+            <Dropzone
               {bundlr}
               {balance}
               {chainId}
               contract={getContract()}
               onFinishUpload={handleFinishUpload}
-            /> -->
-            <div class="list">
-              <div class="title">
-                <h2>My public folder</h2>
-                <Uploader
-                  {bundlr}
-                  {balance}
-                  {chainId}
-                  contract={getContract()}
-                  onFinishUpload={handleFinishUpload}
-                />
+            >
+              <div class="list">
+                <div class="title">
+                  <h2>My public folder</h2>
+                  <Uploader
+                    {bundlr}
+                    {balance}
+                    {chainId}
+                    contract={getContract()}
+                    onFinishUpload={handleFinishUpload}
+                  />
+                </div>
+                <div class="files">
+                  <FileList
+                    {files}
+                    onSelectFile={handleSelectFile}
+                    {selectedFile}
+                  />
+                </div>
               </div>
-              <div class="files">
-                <FileList
-                  {files}
-                  onSelectFile={handleSelectFile}
-                  {selectedFile}
-                />
-              </div>
-            </div>
-            {#if selectedFile}
-              <div class="details">
-                <FileDetails
-                  {selectedFile}
-                  {contractTxId}
-                  onDeleteFile={handleDeleteFile}
-                />
-              </div>
-            {/if}
+
+              {#if selectedFile}
+                <div class="details">
+                  <FileDetails
+                    {selectedFile}
+                    {contractTxId}
+                    onDeleteFile={handleDeleteFile}
+                  />
+                </div>
+              {/if}
+            </Dropzone>
           </div>
         </MainLayout>
       {:else}
