@@ -17,33 +17,18 @@
 
 <div
   class="dropzone"
-  class:dragging
-  on:dragenter={(e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  on:dragenter|preventDefault={(e) => {
     dragging = true;
   }}
-  on:dragover={(e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  on:dragover|preventDefault={(e) => {
     dragging = true;
   }}
-  on:dragleave={(e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  on:drop|preventDefault={(e) => {
     dragging = false;
-  }}
-  on:drop={(e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dragging = false;
-
     const dt = e.dataTransfer;
     const files = dt?.files;
-
     if (files) {
       const file = files[0];
-
       uploadFile(
         file,
         bundlr,
@@ -56,13 +41,23 @@
     }
   }}
 >
-  {#if uploadStatus === "not_started"}
-    <p>Drop a file here...</p>
-  {:else if uploadStatus === "working"}
-    <p>Uploading...</p>
-  {:else if uploadStatus === "done"}
-    <p>Uploaded!</p>
-  {/if}
+  <div
+    class:hidden={uploadStatus === "not_started"}
+    class="dropzone"
+    class:dragging={dragging || uploadStatus !== "not_started"}
+    on:dragleave|preventDefault={(e) => {
+      dragging = false;
+    }}
+  >
+    {#if uploadStatus === "not_started"}
+      <p>Drop a file here...</p>
+    {:else if uploadStatus === "working"}
+      <p>Uploading...</p>
+    {:else if uploadStatus === "done"}
+      <p>Uploaded!</p>
+    {/if}
+  </div>
+  <slot />
 </div>
 
 <style>
@@ -72,16 +67,27 @@
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 1);
     backdrop-filter: blur(10px);
-    z-index: 100;
-    border: 3px dashed #ddd;
+    z-index: 0;
     display: flex;
     align-items: center;
     justify-content: center;
   }
   .dropzone.dragging {
-    border-color: var(--color-secondary);
+    opacity: 1;
+    border: 3px dashed var(--color-secondary);
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  .dropzone.dragging * {
+    pointer-events: none;
+  }
+
+  .hidden {
+    opacity: 0;
+    z-index: -1;
   }
 
   .dropzone p {
