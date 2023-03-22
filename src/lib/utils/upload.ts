@@ -36,6 +36,7 @@ export const uploadFile = async (
       // });
 
       const fileStream = fileReaderStream(file);
+      const id = uuidv4();
 
       uploader
         .uploadData(fileStream, {
@@ -52,7 +53,7 @@ export const uploadFile = async (
               name: file.name,
               uploadedAt: Date.now(),
               txId: res.data.id,
-              id: uuidv4(),
+              id,
             };
 
             await contract.writeInteraction({
@@ -60,7 +61,7 @@ export const uploadFile = async (
               file: newFile,
             });
 
-            onFinishUpload(res.data.id, newFile);
+            onFinishUpload(id, newFile);
 
             balance = await bundlr.getLoadedBalance();
 
