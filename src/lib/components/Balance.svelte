@@ -16,17 +16,19 @@
   let refreshing: boolean = false;
   let fundingStatus: string = "not_started";
 
-  const getAmount = (chainId: string) => {
+  const MULTIPLIER = 1000000000000000000;
+
+  const getDefaultAmount = (chainId: string) => {
     let amount;
     switch (chainId) {
       case "0x1": {
-        // 0.0001 ETH
-        amount = 100000000000000;
+        // 0.001 ETH
+        amount = 0.0001;
         break;
       }
       case "0x89": {
         // 0.1 MATIC
-        amount = 100000000000000000;
+        amount = 0.1;
         break;
       }
       default: {
@@ -47,23 +49,35 @@
   };
 
   const fund = async () => {
-    fundingStatus = "working";
-    try {
-      await bundlr.fund(getAmount(chainId));
-      balance = await bundlr.getLoadedBalance();
-      fundingStatus = "done";
-      setTimeout(() => {
-        fundingStatus = "not_started";
-      }, 5000);
-    } catch (err: any) {
-      if (err.message.includes("insufficient funds")) {
-        alert(
-          `You don’t have enough ${
-            chainInfo(chainId).symbol
-          } in your wallet to fund your account.`
-        );
+    const amount = prompt(
+      `How much would you like to fund your account? (in ${
+        chainInfo(chainId).symbol
+      })`,
+      getDefaultAmount(chainId).toString()
+    );
+    if (amount) {
+      if (parseFloat(amount)) {
+        fundingStatus = "working";
+        try {
+          await bundlr.fund(parseFloat(amount) * MULTIPLIER);
+          balance = await bundlr.getLoadedBalance();
+          fundingStatus = "done";
+          setTimeout(() => {
+            fundingStatus = "not_started";
+          }, 5000);
+        } catch (err: any) {
+          if (err.message.includes("insufficient funds")) {
+            alert(
+              `You don’t have enough ${
+                chainInfo(chainId).symbol
+              } in your wallet to fund your account.`
+            );
+          }
+          fundingStatus = "not_started";
+        }
+      } else {
+        alert("This is not a valid amount.");
       }
-      fundingStatus = "not_started";
     }
   };
 </script>
