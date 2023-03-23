@@ -3,6 +3,7 @@
 
   import Account from "$lib/components/Account.svelte";
   import Balance from "$lib/components/Balance.svelte";
+  import CurrentPrice from "$lib/components/CurrentPrice.svelte";
   import IconButton from "$lib/components/IconButton.svelte";
   import Logo from "$lib/components/Logo.svelte";
 
@@ -15,6 +16,7 @@
 <div class="container">
   <header>
     <Logo />
+    <CurrentPrice {bundlr} {chainId} />
     <Account {account} />
   </header>
 
