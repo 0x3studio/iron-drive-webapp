@@ -51,7 +51,7 @@
     />
     <div class="unit">{chainInfo($chainId).symbol}</div>
   </div>
-  <div style="line-height:6px;">~</div>
+  <div class="tilde">~</div>
   <div class="entry">
     <input
       step="1"
@@ -111,6 +111,23 @@
     display: flex;
     align-items: center;
     flex-flow: column;
-    gap: 0.8rem;
+    gap: 0.5rem;
+  }
+
+  .tilde {
+    line-height: 6px;
+    position: relative;
+    background: white;
+    border: 1px solid #b3b3b3;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    /* padding: 1rem; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -20px;
+    margin-bottom: -20px;
+    box-shadow: 0px 2px 2px -1px rgb(0 0 0 / 25%);
   }
 </style>
