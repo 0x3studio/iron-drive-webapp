@@ -8,7 +8,9 @@
   import IconButton from "$lib/components/IconButton.svelte";
 
   import { chainInfo } from "$lib/utils/chain";
-  import { balance, bundlrStore, chainId } from "$lib/stores";
+  import Modal, { getModal } from "./Modal.svelte";
+  import { balance, bundlrStore, chainId, pricePerGb } from "$lib/stores";
+  import AddFund from "./AddFund.svelte";
 
   let refreshing: boolean = false;
   let fundingStatus: string = "not_started";
@@ -45,19 +47,20 @@
     }, 1000);
   };
 
-  const fund = async () => {
-    const amount = prompt(
-      `How much would you like to fund your account? (in ${
-        chainInfo(chainId).symbol
-      })`,
-      getDefaultAmount(chainId).toString()
-    );
+  const fund = () => {
+    getModal("fund").open();
+  };
+
+  const onFundAdd = async (amount: number) => {
+    console.log("ADD", amount);
+    getModal("fund").close();
+
     if (amount) {
-      if (parseFloat(amount)) {
+      if (amount) {
         fundingStatus = "working";
         try {
-          await bundlr.fund(parseFloat(amount) * MULTIPLIER);
-          balance = await bundlr.getLoadedBalance();
+          await $bundlrStore.fund(amount * MULTIPLIER);
+          $balance = await $bundlrStore.getLoadedBalance();
           fundingStatus = "done";
           setTimeout(() => {
             fundingStatus = "not_started";
@@ -66,7 +69,7 @@
           if (err.message.includes("insufficient funds")) {
             alert(
               `You don’t have enough ${
-                chainInfo(chainId).symbol
+                chainInfo($chainId).symbol
               } in your wallet to fund your account.`
             );
           }
@@ -78,6 +81,10 @@
     }
   };
 </script>
+
+<Modal id="fund">
+  <AddFund onAdd={onFundAdd} />
+</Modal>
 
 <div class="balance">
   <div class="title">

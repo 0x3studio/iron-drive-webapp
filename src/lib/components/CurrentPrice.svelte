@@ -1,36 +1,26 @@
 <script lang="ts">
-  import { bundlrStore, chainId } from "$lib/stores";
+  import { bundlrStore, chainId, pricePerGb } from "$lib/stores";
   import { chainInfo } from "$lib/utils/chain";
+  import { getPrice } from "$lib/utils/price";
 
   let status: string = "working";
   let price: number;
   let priceUSD: number;
 
-  const getPrice = async () => {
+  const _getPrice = async () => {
     status = "working";
 
-    price = (await $bundlrStore.getPrice(1000000000)).toNumber();
-
-    try {
-      const response = await fetch(
-        `https://api.coinbase.com/v2/exchange-rates?currency=${
-          chainInfo($chainId).symbol
-        }`
-      );
-      const json = await response.json();
-      const rate = json.data.rates.USD;
-
-      priceUSD = rate * $bundlrStore.utils.unitConverter(price).toNumber();
-    } catch (err) {
-      console.error(err);
-    }
-
+    const data = await getPrice($bundlrStore, $chainId);
+    price = data.price;
+    priceUSD = data.priceUSD;
+    $pricePerGb.price = price;
+    $pricePerGb.priceUSD = priceUSD;
     status = "done";
   };
 
-  getPrice();
+  _getPrice();
   setInterval(() => {
-    getPrice();
+    _getPrice();
   }, 30000);
 </script>
 
