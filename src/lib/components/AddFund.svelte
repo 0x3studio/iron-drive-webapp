@@ -65,7 +65,7 @@
     onClick={() => {
       onAdd(price);
     }}
-    icon="material-symbols:add-box-outline">Validate</Button
+    icon="logos:metamask-icon">Validate</Button
   >
 </div>
 
@@ -126,8 +126,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: -20px;
-    margin-bottom: -20px;
-    box-shadow: 0px 2px 2px -1px rgb(0 0 0 / 25%);
+    margin-top: -14px;
+    margin-bottom: -14px;
+    box-shadow: 0px 2 px 2px -1px rgb(0 0 0 / 25%);
   }
 </style>
