@@ -1,8 +1,6 @@
 <script lang="ts">
+  import { bundlrStore, chainId } from "$lib/stores";
   import { chainInfo } from "$lib/utils/chain";
-
-  export let bundlr: any;
-  export let chainId: string;
 
   let status: string = "working";
   let price: number;
@@ -11,18 +9,18 @@
   const getPrice = async () => {
     status = "working";
 
-    price = await bundlr.getPrice(1000000000);
+    price = (await $bundlrStore.getPrice(1000000000)).toNumber();
 
     try {
       const response = await fetch(
         `https://api.coinbase.com/v2/exchange-rates?currency=${
-          chainInfo(chainId).symbol
+          chainInfo($chainId).symbol
         }`
       );
       const json = await response.json();
       const rate = json.data.rates.USD;
 
-      priceUSD = rate * bundlr.utils.unitConverter(price);
+      priceUSD = rate * $bundlrStore.utils.unitConverter(price).toNumber();
     } catch (err) {
       console.error(err);
     }
@@ -42,8 +40,8 @@
     <p>Loading...</p>
   {:else}
     <p>
-      {bundlr.utils.unitConverter(price).toFixed(10)}
-      {chainInfo(chainId).symbol}
+      {$bundlrStore.utils.unitConverter(price).toFixed(10)}
+      {chainInfo($chainId).symbol}
       {#if priceUSD}
         (${priceUSD.toFixed(2)})
       {/if}

@@ -1,10 +1,8 @@
 <script lang="ts">
+  import { balance, bundlrStore, chainId } from "$lib/stores";
   import { uploadFile } from "$lib/utils/upload";
 
-  export let bundlr: any;
-  export let balance: any;
   export let contract: any;
-  export let chainId: string;
   export let onFinishUpload: Function;
 
   let dragging: boolean = false;
@@ -31,10 +29,10 @@
       const file = files[0];
       uploadFile(
         file,
-        bundlr,
-        balance,
+        $bundlrStore,
+        $balance,
         contract,
-        chainId,
+        $chainId,
         onFinishUpload,
         onStatusChange
       );

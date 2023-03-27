@@ -8,15 +8,12 @@
   import Logo from "$lib/components/Logo.svelte";
 
   export let account: any;
-  export let bundlr: any;
-  export let balance: any;
-  export let chainId: string;
 </script>
 
 <div class="container">
   <header>
     <Logo />
-    <CurrentPrice {bundlr} {chainId} />
+    <CurrentPrice />
     <Account {account} />
   </header>
 
@@ -61,7 +58,7 @@
           </nav>
         </div>
       </div>
-      <Balance {bundlr} {balance} {chainId} />
+      <Balance />
     </div>
     <div class="content">
       <slot />

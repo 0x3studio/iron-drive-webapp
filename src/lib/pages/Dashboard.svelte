@@ -21,6 +21,7 @@
 
   import { chainInfo } from "$lib/utils/chain";
   import { ownsToken } from "$lib/utils/token";
+  import { balance, bundlrStore, chainId } from "$lib/stores";
 
   // const MAIN_CONTRACT_SOURCE_TX_ID =
   //   "0HMxzcYa2Y9HHK_e3wWFdnY0v8Hm_02MH_m0c3pDZBo";
@@ -40,14 +41,11 @@
 
   let loadingWallet: boolean = true;
 
-  let chainId: string;
   let accounts: any = [];
   let canAccessApp: boolean = false;
   let contractTxId: string | null = null;
 
-  let bundlr: any;
-  let balance: any;
-
+  let bundlr: WebBundlr | null;
   let warp: any;
 
   let owner: any = null;
@@ -102,11 +100,11 @@
 
   const init = async () => {
     if (window.ethereum) {
-      chainId = await window.ethereum.request({ method: "eth_chainId" });
+      $chainId = await window.ethereum.request({ method: "eth_chainId" });
       accounts = await window.ethereum.request({ method: "eth_accounts" });
 
       window.ethereum.on("chainChanged", async (_chainId: string) => {
-        chainId = _chainId;
+        $chainId = _chainId;
         bundlr = null;
       });
 
@@ -154,15 +152,15 @@
 
     const _bundlr = new WebBundlr(
       BUNDLR_NODE_URL,
-      chainInfo(chainId).name,
+      chainInfo($chainId).name,
       provider
     );
+    bundlrStore.set(_bundlr);
     await _bundlr.ready();
 
-    const _balance = await _bundlr.getLoadedBalance();
+    $balance = await _bundlr.getLoadedBalance();
 
     bundlr = _bundlr;
-    balance = _balance;
   };
 
   const getMainContract = () => {
@@ -302,7 +300,7 @@
   <SimpleLayout>
     <Jumper size="44" color="#04cae5" unit="px" duration="1s" />
   </SimpleLayout>
-{:else if chainId !== "0x1" && chainId !== "0x89"}
+{:else if $chainId !== "0x1" && $chainId !== "0x89"}
   <SimpleLayout>
     <div class="simple">
       <div class="info">Please connect to Ethereum or Polygon Mainnet.</div>
@@ -320,12 +318,9 @@
   {#if bundlr}
     {#if contractTxId}
       {#if owner}
-        <MainLayout account={accounts[0]} {bundlr} {balance} {chainId}>
+        <MainLayout account={accounts[0]}>
           <div class="main">
             <Dropzone
-              {bundlr}
-              {balance}
-              {chainId}
               contract={getContract()}
               onFinishUpload={handleFinishUpload}
             >
@@ -333,9 +328,6 @@
                 <div class="title">
                   <h2>My public folder</h2>
                   <Uploader
-                    {bundlr}
-                    {balance}
-                    {chainId}
                     contract={getContract()}
                     onFinishUpload={handleFinishUpload}
                   />

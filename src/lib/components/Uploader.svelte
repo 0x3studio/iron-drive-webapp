@@ -1,12 +1,10 @@
 <script lang="ts">
   import IconButton from "$lib/components/IconButton.svelte";
+  import { balance, bundlrStore, chainId } from "$lib/stores";
 
   import { uploadFile } from "$lib/utils/upload";
 
-  export let bundlr: any;
-  export let balance: any;
   export let contract: any;
-  export let chainId: string;
   export let onFinishUpload: Function;
 
   let fileInput: any;
@@ -22,10 +20,10 @@
       const file = target.files[0];
       uploadFile(
         file,
-        bundlr,
-        balance,
+        $bundlrStore,
+        $balance,
         contract,
-        chainId,
+        $chainId,
         onFinishUpload,
         onStatusChange
       );
@@ -38,7 +36,7 @@
     <IconButton
       icon="ic:outline-upload-file"
       onClick={() => {
-        if (bundlr) {
+        if ($bundlrStore) {
           fileInput.click();
         } else {
           alert("Please connect with Bundlr to be able to upload files.");

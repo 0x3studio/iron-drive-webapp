@@ -8,10 +8,7 @@
   import IconButton from "$lib/components/IconButton.svelte";
 
   import { chainInfo } from "$lib/utils/chain";
-
-  export let bundlr: any;
-  export let balance: any;
-  export let chainId: string;
+  import { balance, bundlrStore, chainId } from "$lib/stores";
 
   let refreshing: boolean = false;
   let fundingStatus: string = "not_started";
@@ -41,7 +38,7 @@
   const refreshBalance = async () => {
     refreshing = true;
 
-    balance = await bundlr.getLoadedBalance();
+    $balance = await $bundlrStore.getLoadedBalance();
 
     setTimeout(() => {
       refreshing = false;
@@ -99,8 +96,8 @@
   </div>
   <div class="value">
     <span
-      >{bundlr.utils.unitConverter(balance).toFixed(10)}
-      {chainInfo(chainId).symbol}</span
+      >{$bundlrStore.utils.unitConverter($balance).toFixed(10)}
+      {chainInfo($chainId).symbol}</span
     >
     {#if refreshing}
       <Jumper size="20" color="#04cae5" unit="px" duration="1s" />
