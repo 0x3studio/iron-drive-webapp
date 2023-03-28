@@ -195,6 +195,7 @@
   //   const { contractTxId: _contractTxId } = await warp.deploy({
   //     wallet: userSigner,
   //     initState: JSON.stringify({
+  //       users: {},
   //       owner: null,
   //       canEvolve: true,
   //     }),
