@@ -13,7 +13,7 @@
 <div class="container">
   <header>
     <Logo />
-    <CurrentPrice />
+
     <Account {account} />
   </header>
 
@@ -85,7 +85,7 @@
     height: calc(100% - 69px);
   }
   .sidebar {
-    width: 250px;
+    width: 265px;
     padding: 20px;
     border-right: 1px solid #f9f8f8;
     display: flex;

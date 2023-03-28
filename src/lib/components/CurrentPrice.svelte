@@ -25,16 +25,30 @@
 </script>
 
 <div>
-  <h3>Current price per GB</h3>
+  <span>1GB =</span>
   {#if status === "working"}
-    <p>Loading...</p>
+    <span>...</span>
   {:else}
-    <p>
-      {$bundlrStore.utils.unitConverter(price).toFixed(10)}
-      {chainInfo($chainId).symbol}
+    <span>
       {#if priceUSD}
-        (${priceUSD.toFixed(2)})
-      {/if}
-    </p>
+        ${priceUSD.toFixed(2)}
+      {/if} |
+      {$bundlrStore.utils.unitConverter(price).toFixed(5)}
+      {chainInfo($chainId).symbol}
+    </span>
   {/if}
 </div>
+
+<style>
+  div {
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.5);
+    padding: 0.5rem;
+    width: 100%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    background: #8080801f;
+    border-radius: 10px;
+  }
+</style>

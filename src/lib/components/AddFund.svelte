@@ -2,6 +2,7 @@
   import { bundlrStore, chainId, pricePerGb } from "$lib/stores";
   import { chainInfo } from "$lib/utils/chain";
   import Button from "./Button.svelte";
+  import CurrentPrice from "./CurrentPrice.svelte";
   let size = 0;
   let price = $chainId === "0x1" ? 0.01 : 1;
 
@@ -42,6 +43,7 @@
   <h3>Add funds</h3>
 </div>
 <div class="container">
+  <CurrentPrice />
   <div class="entry">
     <input
       step={$chainId === "0x1" ? "0.001" : "0.1"}
@@ -73,7 +75,7 @@
   .title {
     padding: 10px;
     border-bottom: 1px solid #eee;
-    margin-bottom: 1rem;
+    margin-bottom: 0.1rem;
     display: flex;
     align-items: center;
     justify-content: space-between;

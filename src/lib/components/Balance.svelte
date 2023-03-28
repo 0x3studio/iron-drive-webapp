@@ -11,6 +11,7 @@
   import Modal, { getModal } from "./Modal.svelte";
   import { balance, bundlrStore, chainId, pricePerGb } from "$lib/stores";
   import AddFund from "./AddFund.svelte";
+  import CurrentPrice from "./CurrentPrice.svelte";
 
   let refreshing: boolean = false;
   let fundingStatus: string = "not_started";
@@ -101,6 +102,7 @@
       <Icon icon="material-symbols:info-outline" />
     </div>
   </div>
+
   <div class="value">
     <span
       >{$bundlrStore.utils.unitConverter($balance).toFixed(10)}
@@ -116,6 +118,9 @@
         >
       </span>
     {/if}
+  </div>
+  <div style="margin: .5rem 0;">
+    <CurrentPrice />
   </div>
   <div class="add">
     <Button
@@ -169,7 +174,7 @@
   .value {
     display: flex;
     align-items: center;
-    margin-bottom: 1rem;
+
     column-gap: 0.25rem;
     line-height: 20px;
     font-size: 14px;
