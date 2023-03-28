@@ -38,11 +38,7 @@
     <IconButton
       icon="ic:outline-upload-file"
       onClick={() => {
-        if (bundlr) {
-          fileInput.click();
-        } else {
-          alert("Please connect with Bundlr to be able to upload files.");
-        }
+        fileInput.click();
       }}
     />
     <input type="file" on:change={handleChange} bind:this={fileInput} />
