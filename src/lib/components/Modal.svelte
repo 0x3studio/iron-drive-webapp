@@ -10,7 +10,8 @@
 
 <script lang="ts">
   import { onDestroy } from "svelte";
-
+  import { fade, fly } from "svelte/transition";
+  import { cubicInOut } from "svelte/easing";
   let topDiv: HTMLElement;
   let visible = false;
   let prevOnTop: HTMLElement;
@@ -57,19 +58,27 @@
   });
 </script>
 
-<div
-  id="topModal"
-  class:visible
-  bind:this={topDiv}
-  on:click={() => close()}
-  on:keydown={() => {}}
->
-  <div id="modal" on:click|stopPropagation={() => {}} on:keydown={() => {}}>
-    <div id="modal-content">
-      <slot />
+{#if visible}
+  <div
+    id="topModal"
+    class:visible
+    bind:this={topDiv}
+    on:click={() => close()}
+    on:keydown={() => {}}
+    transition:fade={{ duration: 150, easing: cubicInOut }}
+  >
+    <div
+      id="modal"
+      on:click|stopPropagation={() => {}}
+      on:keydown={() => {}}
+      transition:fly={{ y: 40, duration: 350, easing: cubicInOut }}
+    >
+      <div id="modal-content">
+        <slot />
+      </div>
     </div>
   </div>
-</div>
+{/if}
 
 <style>
   #topModal {
@@ -101,25 +110,6 @@
     visibility: visible !important;
   }
 
-  #close {
-    position: absolute;
-    top: -12px;
-    right: -12px;
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    fill: #f44;
-    transition: transform 0.3s;
-  }
-
-  #close:hover {
-    transform: scale(2);
-  }
-
-  #close line {
-    stroke: #fff;
-    stroke-width: 2;
-  }
   #modal-content {
     max-width: calc(100vw - 20px);
     max-height: calc(100vh - 20px);

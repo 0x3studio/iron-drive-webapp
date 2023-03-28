@@ -12,6 +12,7 @@
   import { balance, bundlrStore, chainId, pricePerGb } from "$lib/stores";
   import AddFund from "./AddFund.svelte";
   import CurrentPrice from "./CurrentPrice.svelte";
+  import { fly } from "svelte/transition";
 
   let refreshing: boolean = false;
   let fundingStatus: string = "not_started";
