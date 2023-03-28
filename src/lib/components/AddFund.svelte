@@ -51,7 +51,7 @@
       on:input={handlePriceChange}
       type="number"
     />
-    <div class="unit">{chainInfo($chainId).symbol}</div>
+    <div>{chainInfo($chainId).symbol}</div>
   </div>
   <div class="tilde">~</div>
   <div class="entry">
@@ -61,7 +61,7 @@
       bind:value={size}
       on:input={handleSizeChange}
     />
-    <div class="unit">Mb</div>
+    <div>Mb</div>
   </div>
   <Button
     onClick={() => {
@@ -92,9 +92,6 @@
     outline: none;
   }
 
-  .unit {
-    flex: 0.25;
-  }
   .entry {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 10px;
