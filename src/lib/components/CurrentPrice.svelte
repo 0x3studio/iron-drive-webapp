@@ -25,7 +25,7 @@
 </script>
 
 <div>
-  <span>1GB =</span>
+  <span>1 GB =</span>
   {#if status === "working"}
     <span>...</span>
   {:else}

@@ -3,11 +3,12 @@
   import { chainInfo } from "$lib/utils/chain";
   import Button from "./Button.svelte";
   import CurrentPrice from "./CurrentPrice.svelte";
-  let size = 0;
-  let price = $chainId === "0x1" ? 0.01 : 1;
 
+  const STEP = $chainId === "0x1" ? 0.001 : 0.1;
   const PRECISION = 8;
-  console.log($chainId);
+
+  let size = 0;
+  let price = STEP * 10;
 
   export let onAdd: Function;
 
@@ -46,7 +47,7 @@
   <CurrentPrice />
   <div class="entry">
     <input
-      step={$chainId === "0x1" ? "0.001" : "0.1"}
+      step={STEP}
       bind:value={price}
       on:input={handlePriceChange}
       type="number"
@@ -61,7 +62,7 @@
       bind:value={size}
       on:input={handleSizeChange}
     />
-    <div>Mb</div>
+    <div>MB</div>
   </div>
   <Button
     onClick={() => {
