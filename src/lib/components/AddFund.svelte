@@ -7,7 +7,6 @@
   let price = $chainId === "0x1" ? 0.01 : 1;
 
   const PRECISION = 8;
-  console.log($chainId);
 
   export let onAdd: Function;
 

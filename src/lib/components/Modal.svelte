@@ -36,7 +36,6 @@
     document.body.style.overflow = "hidden";
 
     visible = true;
-    console.log("TOPDIV", topDiv);
     //Move the modal in the DOM to be the last child of <BODY> so that it can be on top of everything
     if (topDiv) {
       document.body.appendChild(topDiv);
