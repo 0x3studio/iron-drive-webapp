@@ -46,22 +46,12 @@
 <div class="container">
   <CurrentPrice />
   <div class="entry">
-    <input
-      step={STEP}
-      bind:value={price}
-      on:input={handlePriceChange}
-      type="number"
-    />
+    <input step={STEP} bind:value={price} on:input={handlePriceChange} />
     <div>{chainInfo($chainId).symbol}</div>
   </div>
   <div class="tilde">~</div>
   <div class="entry">
-    <input
-      step="1"
-      type="number"
-      bind:value={size}
-      on:input={handleSizeChange}
-    />
+    <input step="1" bind:value={size} on:input={handleSizeChange} />
     <div>MB</div>
   </div>
   <Button
