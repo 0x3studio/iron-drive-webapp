@@ -135,7 +135,7 @@
   };
 
   const connectWallet = async () => {
-    if (window.ethereum) {
+    if (window.ethereum && window.ethereum.isMetaMask) {
       const accounts = await window.ethereum.request({
         method: "eth_requestAccounts",
       });
