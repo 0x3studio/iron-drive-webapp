@@ -33,7 +33,7 @@
     font-family: inherit;
     border-radius: 10px;
     width: 100%;
-    transition: all 0.75s cubic-bezier(0.085, 0.82, 0.165, 1);
+    transition: background-color 0.75s cubic-bezier(0.085, 0.82, 0.165, 1);
     display: flex;
     align-items: center;
   }

@@ -2,21 +2,22 @@ import fileReaderStream from "filereader-stream";
 import { v4 as uuidv4 } from "uuid";
 
 import { chainInfo } from "$lib/utils/chain";
-
+import type { WebBundlr } from "@bundlr-network/client";
+import { balance } from "$lib/stores";
+import { get } from "svelte/store";
 const APP_NAME = "IronDrive";
 
 export const uploadFile = async (
   file: any,
-  bundlr: any,
-  balance: any,
+  bundlr: WebBundlr,
   contract: any,
   chainId: string,
   onFinishUpload: Function,
   onStatusChange: Function
 ) => {
   const price = await bundlr.getPrice(file.size);
-
-  if (file.size < 100000 || price.toNumber() < balance.toNumber()) {
+  const _balance = get(balance);
+  if (file.size < 100000 || price.isLessThan(_balance)) {
     if (
       file.size < 100000 ||
       confirm(
@@ -63,7 +64,7 @@ export const uploadFile = async (
 
             onFinishUpload(id, newFile);
 
-            balance = await bundlr.getLoadedBalance();
+            balance.set(await bundlr.getLoadedBalance());
 
             onStatusChange("done");
             setTimeout(() => {

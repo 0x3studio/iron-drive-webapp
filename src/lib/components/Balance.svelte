@@ -8,25 +8,28 @@
   import IconButton from "$lib/components/IconButton.svelte";
 
   import { chainInfo } from "$lib/utils/chain";
-
-  export let bundlr: any;
-  export let balance: any;
-  export let chainId: string;
+  import Modal, { getModal } from "./Modal.svelte";
+  import { balance, bundlrStore, chainId, pricePerGb } from "$lib/stores";
+  import AddFund from "./AddFund.svelte";
+  import CurrentPrice from "./CurrentPrice.svelte";
+  import { fly } from "svelte/transition";
 
   let refreshing: boolean = false;
   let fundingStatus: string = "not_started";
 
-  const getAmount = (chainId: string) => {
+  const MULTIPLIER = 1000000000000000000;
+
+  const getDefaultAmount = (chainId: string) => {
     let amount;
     switch (chainId) {
       case "0x1": {
-        // 0.0001 ETH
-        amount = 100000000000000;
+        // 0.001 ETH
+        amount = 0.0001;
         break;
       }
       case "0x89": {
         // 0.1 MATIC
-        amount = 100000000000000000;
+        amount = 0.1;
         break;
       }
       default: {
@@ -39,34 +42,51 @@
   const refreshBalance = async () => {
     refreshing = true;
 
-    balance = await bundlr.getLoadedBalance();
+    $balance = await $bundlrStore.getLoadedBalance();
 
     setTimeout(() => {
       refreshing = false;
     }, 1000);
   };
 
-  const fund = async () => {
-    fundingStatus = "working";
-    try {
-      await bundlr.fund(getAmount(chainId));
-      balance = await bundlr.getLoadedBalance();
-      fundingStatus = "done";
-      setTimeout(() => {
-        fundingStatus = "not_started";
-      }, 5000);
-    } catch (err: any) {
-      if (err.message.includes("insufficient funds")) {
-        alert(
-          `You don’t have enough ${
-            chainInfo(chainId).symbol
-          } in your wallet to fund your account.`
-        );
+  const fund = () => {
+    getModal("fund").open();
+  };
+
+  const onFundAdd = async (amount: number) => {
+    console.log("ADD", amount);
+    getModal("fund").close();
+
+    if (amount) {
+      if (amount) {
+        fundingStatus = "working";
+        try {
+          await $bundlrStore.fund(amount * MULTIPLIER);
+          $balance = await $bundlrStore.getLoadedBalance();
+          fundingStatus = "done";
+          setTimeout(() => {
+            fundingStatus = "not_started";
+          }, 5000);
+        } catch (err: any) {
+          if (err.message.includes("insufficient funds")) {
+            alert(
+              `You don’t have enough ${
+                chainInfo($chainId).symbol
+              } in your wallet to fund your account.`
+            );
+          }
+          fundingStatus = "not_started";
+        }
+      } else {
+        alert("This is not a valid amount.");
       }
-      fundingStatus = "not_started";
     }
   };
 </script>
+
+<Modal id="fund">
+  <AddFund onAdd={onFundAdd} />
+</Modal>
 
 <div class="balance">
   <div class="title">
@@ -83,10 +103,11 @@
       <Icon icon="material-symbols:info-outline" />
     </div>
   </div>
+
   <div class="value">
     <span
-      >{bundlr.utils.unitConverter(balance).toFixed(10)}
-      {chainInfo(chainId).symbol}</span
+      >{$bundlrStore.utils.unitConverter($balance).toFixed(10)}
+      {chainInfo($chainId).symbol}</span
     >
     {#if refreshing}
       <Jumper size="20" color="#04cae5" unit="px" duration="1s" />
@@ -98,6 +119,9 @@
         >
       </span>
     {/if}
+  </div>
+  <div style="margin: .5rem 0;">
+    <CurrentPrice />
   </div>
   <div class="add">
     <Button
@@ -151,7 +175,7 @@
   .value {
     display: flex;
     align-items: center;
-    margin-bottom: 1rem;
+
     column-gap: 0.25rem;
     line-height: 20px;
     font-size: 14px;

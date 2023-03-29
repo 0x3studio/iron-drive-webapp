@@ -3,18 +3,17 @@
 
   import Account from "$lib/components/Account.svelte";
   import Balance from "$lib/components/Balance.svelte";
+  import CurrentPrice from "$lib/components/CurrentPrice.svelte";
   import IconButton from "$lib/components/IconButton.svelte";
   import Logo from "$lib/components/Logo.svelte";
 
   export let account: any;
-  export let bundlr: any;
-  export let balance: any;
-  export let chainId: string;
 </script>
 
 <div class="container">
   <header>
     <Logo />
+
     <Account {account} />
   </header>
 
@@ -59,7 +58,7 @@
           </nav>
         </div>
       </div>
-      <Balance {bundlr} {balance} {chainId} />
+      <Balance />
     </div>
     <div class="content">
       <slot />
@@ -86,7 +85,7 @@
     height: calc(100% - 69px);
   }
   .sidebar {
-    width: 250px;
+    width: 265px;
     padding: 20px;
     border-right: 1px solid #f9f8f8;
     display: flex;
