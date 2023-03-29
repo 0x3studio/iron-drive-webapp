@@ -30,7 +30,6 @@
       uploadFile(
         file,
         $bundlrStore,
-        $balance,
         contract,
         $chainId,
         onFinishUpload,

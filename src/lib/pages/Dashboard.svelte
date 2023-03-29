@@ -21,7 +21,7 @@
 
   import { chainInfo } from "$lib/utils/chain";
   import { ownsToken } from "$lib/utils/token";
-  import { balance, bundlrStore, chainId } from "$lib/stores";
+  import { balance, bundlrStore, chainId, provider } from "$lib/stores";
 
   // const MAIN_CONTRACT_SOURCE_TX_ID =
   //   "0HMxzcYa2Y9HHK_e3wWFdnY0v8Hm_02MH_m0c3pDZBo";
@@ -100,11 +100,14 @@
 
   const init = async () => {
     if (window.ethereum) {
-      $chainId = await window.ethereum.request({ method: "eth_chainId" });
+      $provider = new providers.Web3Provider(window.ethereum, "any");
+      $chainId = await $provider
+        .getNetwork()
+        .then((network) => network.chainId);
       accounts = await window.ethereum.request({ method: "eth_accounts" });
 
-      window.ethereum.on("chainChanged", async (_chainId: string) => {
-        $chainId = _chainId;
+      window.ethereum.on("chainChanged", async (_chainId: number) => {
+        $chainId = _chainId * 1;
         bundlr = null;
       });
 
@@ -148,12 +151,10 @@
   };
 
   const connectBundlr = async () => {
-    const provider = new providers.Web3Provider(window.ethereum);
-
     const _bundlr = new WebBundlr(
       BUNDLR_NODE_URL,
       chainInfo($chainId).name,
-      provider
+      $provider
     );
     bundlrStore.set(_bundlr);
     await _bundlr.ready();
@@ -214,8 +215,7 @@
     );
     const source = await response.text();
 
-    const provider = new providers.Web3Provider(window.ethereum);
-    const userSigner = new InjectedEthereumSigner(provider);
+    const userSigner = new InjectedEthereumSigner($provider);
     await userSigner.setPublicKey();
 
     const { contractTxId: _contractTxId } = await warp.deploy({
@@ -301,7 +301,7 @@
   <SimpleLayout>
     <Jumper size="44" color="#04cae5" unit="px" duration="1s" />
   </SimpleLayout>
-{:else if $chainId !== "0x1" && $chainId !== "0x89"}
+{:else if $chainId !== 1 && $chainId !== 137}
   <SimpleLayout>
     <div class="simple">
       <div class="info">Please connect to Ethereum or Polygon Mainnet.</div>

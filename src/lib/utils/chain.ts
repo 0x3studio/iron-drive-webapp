@@ -1,11 +1,13 @@
-export const chainInfo = (chainId: string) => {
+export const chainInfo = (chainId: number | string) => {
   let info;
+
   switch (chainId) {
-    case "0x1": {
+    case 1: {
       info = { name: "ethereum", symbol: "ETH" };
       break;
     }
-    case "0x89": {
+
+    case 137: {
       info = { name: "matic", symbol: "MATIC" };
       break;
     }

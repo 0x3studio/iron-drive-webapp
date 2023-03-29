@@ -11,7 +11,7 @@ export const uploadFile = async (
   file: any,
   bundlr: WebBundlr,
   contract: any,
-  chainId: string,
+  chainId: number,
   onFinishUpload: Function,
   onStatusChange: Function
 ) => {
@@ -47,6 +47,7 @@ export const uploadFile = async (
           ],
         })
         .then(async (res: any) => {
+          console.log("CONTRACT", contract);
           if (contract) {
             const newFile = {
               size: file.size,

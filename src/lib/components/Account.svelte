@@ -1,15 +1,12 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { fetchEnsName } from "@wagmi/core";
+  import { chainId, provider } from "$lib/stores";
 
   export let account: any;
-
   let ensName: string | null;
 
   onMount(async () => {
-    ensName = await fetchEnsName({
-      address: account,
-    });
+    ensName = $chainId === 1 ? await $provider.lookupAddress(account) : null;
   });
 </script>
 

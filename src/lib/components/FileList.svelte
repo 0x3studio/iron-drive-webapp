@@ -15,6 +15,10 @@
       onSelectFile(null);
     }
   }
+
+  $: {
+    console.log("files", files);
+  }
 </script>
 
 <svelte:window on:mousedown={handleMsDown} />
@@ -22,7 +26,7 @@
 {#if Object.keys(files).length > 0}
   <table cellpadding="0" cellspacing="0">
     {#each Object.values(files) as file, i}
-      {#if file.txId}
+      {#if file && file.txId}
         <tr
           on:click={() => {
             onSelectFile(file);

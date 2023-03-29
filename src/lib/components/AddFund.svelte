@@ -4,7 +4,7 @@
   import Button from "./Button.svelte";
   import CurrentPrice from "./CurrentPrice.svelte";
 
-  const STEP = $chainId === "0x1" ? 0.001 : 0.1;
+  const STEP = $chainId === 1 ? 0.001 : 0.1;
   const PRECISION = 8;
 
   let size = 0;

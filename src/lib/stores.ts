@@ -4,10 +4,12 @@ import { get, writable, type Writable } from "svelte/store";
 import type BigNumber from "bignumber.js";
 import { getPrice } from "./utils/price";
 import type { Timeout } from "svooltip/types";
+import type { providers } from "ethers";
 
 export const bundlrStore: Writable<WebBundlr> = writable();
 export const balance: Writable<BigNumber> = writable();
-export const chainId: Writable<string> = writable();
+export const chainId: Writable<number> = writable();
+export const provider: Writable<providers.Web3Provider> = writable();
 
 function createPricePerGb() {
   let id: null | Timeout = null;
