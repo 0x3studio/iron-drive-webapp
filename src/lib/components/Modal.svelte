@@ -37,7 +37,9 @@
 
     visible = true;
     //Move the modal in the DOM to be the last child of <BODY> so that it can be on top of everything
-    document.body.appendChild(topDiv);
+    if (topDiv) {
+      document.body.appendChild(topDiv);
+    }
   }
 
   function close(retVal?: any) {

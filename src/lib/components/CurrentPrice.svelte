@@ -2,6 +2,7 @@
   import { bundlrStore, chainId, pricePerGb } from "$lib/stores";
   import { chainInfo } from "$lib/utils/chain";
   import { getPrice } from "$lib/utils/price";
+  import { onDestroy } from "svelte";
 
   let status: string = "working";
   let price: number;
@@ -19,9 +20,13 @@
   };
 
   _getPrice();
-  setInterval(() => {
+  const interval = setInterval(() => {
     _getPrice();
   }, 30000);
+
+  onDestroy(() => {
+    clearInterval(interval);
+  });
 </script>
 
 <div>
