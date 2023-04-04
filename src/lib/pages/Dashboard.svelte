@@ -286,7 +286,7 @@
     }
   };
 
-  const handleFinishUpload = (id: string, newFile: string) => {
+  const handleFinishUpload = (id: string, newFile: any) => {
     files[id] = newFile;
   };
 
